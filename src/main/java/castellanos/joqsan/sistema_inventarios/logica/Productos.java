@@ -13,11 +13,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.query.Query;
 
-public class CRUD_Productos {
+public class Productos {
     
-    public static CRUD_Productos crud = null;
+    public static Productos crud = null;
 
-    public CRUD_Productos() throws Errores.ConexionException {
+    public Productos() throws Errores.ConexionException {
         
         if(Hibernate.type == null || !Hibernate.type.equals(Producto.class)) {
             

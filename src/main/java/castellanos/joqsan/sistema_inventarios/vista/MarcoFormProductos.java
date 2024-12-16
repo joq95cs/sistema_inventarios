@@ -1,7 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.vista;
 
-import castellanos.joqsan.sistema_inventarios.logica.CRUD_Productos;
+import castellanos.joqsan.sistema_inventarios.logica.Productos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.logica.Hibernate;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
@@ -21,9 +21,9 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         Utilidades.centrarMarco(this);
         setResizable(false);
         
-        if(CRUD_Productos.crud == null) {
+        if(Productos.crud == null) {
             
-            CRUD_Productos.crud = new CRUD_Productos();
+            Productos.crud = new Productos();
         }
         
         if(cargar) {
@@ -36,8 +36,8 @@ public class MarcoFormProductos extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        labelID = new javax.swing.JLabel();
-        textID = new javax.swing.JTextField();
+        labelId = new javax.swing.JLabel();
+        textId = new javax.swing.JTextField();
         labelNombre = new javax.swing.JLabel();
         textNombre = new javax.swing.JTextField();
         labelCategoria = new javax.swing.JLabel();
@@ -67,7 +67,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             }
         });
 
-        labelID.setText("ID (Clave)");
+        labelId.setText("ID (Clave)");
 
         labelNombre.setText("Nombre");
 
@@ -134,7 +134,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelID)
+                            .addComponent(labelId)
                             .addComponent(labelNombre)
                             .addComponent(labelCategoria)
                             .addComponent(labelStockMin)
@@ -150,7 +150,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                             .addComponent(textStockMin, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(textCategoria, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(textNombre, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(textID, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(textId, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(textStockMaxPedido)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -172,8 +172,8 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelID)
-                    .addComponent(textID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(labelId)
+                    .addComponent(textId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelNombre)
@@ -262,7 +262,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textID.getText();
+            String id = textId.getText();
             String nombre = textNombre.getText();
             String categoria = textCategoria.getText();
             
@@ -303,12 +303,12 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             }
             
             Producto producto = new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido);
-            CRUD_Productos.crud.setProducto(producto);
-            CRUD_Productos.crud.insertarProducto();
+            Productos.crud.setProducto(producto);
+            Productos.crud.insertarProducto();
             Utilidades.limpiarCampos(new JTextField[]{
-                textID, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
             
-            CRUD_Productos.crud.setProducto(null);
+            Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
         } catch(Errores.CamposVaciosException | Errores.InsercionException | HeadlessException | NumberFormatException ex) {
@@ -328,14 +328,14 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textID.getText();
+            String id = textId.getText();
             
             if(id.isEmpty()) {
                 
                 throw new Errores.CamposVaciosException();
             }
             
-            CRUD_Productos.crud.buscarProducto(id);
+            Productos.crud.buscarProducto(id);
             cargar();
             
         } catch(Errores.BusquedaException | Errores.CamposVaciosException ex) {
@@ -348,7 +348,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textID.getText();
+            String id = textId.getText();
             String nombre = textNombre.getText();
             String categoria = textCategoria.getText();
             
@@ -388,12 +388,12 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 stock_max_pedido = Integer.parseInt(textStockMaxPedido.getText());
             }
 
-            CRUD_Productos.crud.actualizarProducto(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
+            Productos.crud.actualizarProducto(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
             
             Utilidades.limpiarCampos(new JTextField[]{
-                textID, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
             
-            CRUD_Productos.crud.setProducto(null);
+            Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
         } catch(Errores.ActualizacionException | Errores.CamposVaciosException | NumberFormatException ex) {
@@ -413,18 +413,18 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textID.getText();
+            String id = textId.getText();
             
             if(id.isEmpty()) {
                 
                 throw new Errores.CamposVaciosException();
             }
             
-            CRUD_Productos.crud.eliminarProducto(id);
+            Productos.crud.eliminarProducto(id);
             Utilidades.limpiarCampos(new JTextField[]{
-                textID, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
             
-            CRUD_Productos.crud.setProducto(null);
+            Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
         } catch(Errores.CamposVaciosException | Errores.EliminacionException | HeadlessException ex) {
@@ -451,7 +451,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                     
                     if(ext.equals("xlsx")) {
                         
-                        CRUD_Productos.crud.cargarExcel(ruta);
+                        Productos.crud.cargarExcel(ruta);
                         JOptionPane.showMessageDialog(this, "Carga de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
@@ -483,31 +483,28 @@ public class MarcoFormProductos extends javax.swing.JFrame {
     
     private void cargar() {
         
-        textID.setText(CRUD_Productos.crud.getProducto().getId());
-        textNombre.setText(CRUD_Productos.crud.getProducto().getNombre());
-        textCategoria.setText(CRUD_Productos.crud.getProducto().getCategoria());
-        textStockMin.setText(CRUD_Productos.crud.getProducto().getStock_min() + "");
-        textStockMax.setText(CRUD_Productos.crud.getProducto().getStock_max() + "");
-        textStockIdeal.setText(CRUD_Productos.crud.getProducto().getStock_ideal() + "");
-        textStockReorden.setText(CRUD_Productos.crud.getProducto().getStock_reorden() + "");
-        textStockMaxPedido.setText(CRUD_Productos.crud.getProducto().getStock_max_pedido() + "");
+        textId.setText(Productos.crud.getProducto().getId());
+        textNombre.setText(Productos.crud.getProducto().getNombre());
+        textCategoria.setText(Productos.crud.getProducto().getCategoria());
+        textStockMin.setText(Productos.crud.getProducto().getStock_min() + "");
+        textStockMax.setText(Productos.crud.getProducto().getStock_max() + "");
+        textStockIdeal.setText(Productos.crud.getProducto().getStock_ideal() + "");
+        textStockReorden.setText(Productos.crud.getProducto().getStock_reorden() + "");
+        textStockMaxPedido.setText(Productos.crud.getProducto().getStock_max_pedido() + "");
     }
     
     public static void main(String args[]) {
         
-        java.awt.EventQueue.invokeLater(() -> {
+        try {
             
-            try {
-
-                Utilidades.setLookAndFeel();
-                MarcoFormProductos.m = new MarcoFormProductos(false);
-                Utilidades.ejecutarMarco(MarcoFormProductos.m);
-                
-            } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
-                
-                ex.printStackTrace();
-            }
-        });
+            Utilidades.setLookAndFeel();
+            MarcoFormProductos.m = new MarcoFormProductos(false);
+            Utilidades.ejecutarMarco(MarcoFormProductos.m);
+            
+        } catch(Errores.ConexionException | Errores.LookAndFeelException ex) {
+            
+            ex.printStackTrace();
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -518,7 +515,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
     private javax.swing.JButton buttonInsertar;
     private javax.swing.JButton buttonLista;
     private javax.swing.JLabel labelCategoria;
-    private javax.swing.JLabel labelID;
+    private javax.swing.JLabel labelId;
     private javax.swing.JLabel labelNombre;
     private javax.swing.JLabel labelStockIdeal;
     private javax.swing.JLabel labelStockMax;
@@ -526,7 +523,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
     private javax.swing.JLabel labelStockMin;
     private javax.swing.JLabel labelStockReorden;
     private javax.swing.JTextField textCategoria;
-    private javax.swing.JTextField textID;
+    private javax.swing.JTextField textId;
     private javax.swing.JTextField textNombre;
     private javax.swing.JTextField textStockIdeal;
     private javax.swing.JTextField textStockMax;

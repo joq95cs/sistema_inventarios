@@ -23,6 +23,7 @@ castellanos\joqsan\sistema_inventarios\orm\ProductoProveedor.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$EliminacionException.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$3.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$6.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos.class
 castellanos\joqsan\sistema_inventarios\orm\Pedido.class
 castellanos\joqsan\sistema_inventarios\orm\ProveedorContacto.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$InsercionException.class

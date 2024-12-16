@@ -1,7 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.vista;
 
-import castellanos.joqsan.sistema_inventarios.logica.CRUD_Productos;
+import castellanos.joqsan.sistema_inventarios.logica.Productos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -26,12 +26,12 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         modelo.addColumn("Stock Máximo Pedido");
         tableProductos.setModel(modelo);
         
-        if(CRUD_Productos.crud == null) {
+        if(Productos.crud == null) {
             
-            CRUD_Productos.crud = new CRUD_Productos();
+            Productos.crud = new Productos();
         }
         
-        CRUD_Productos.crud.cargarLista(modelo);
+        Productos.crud.cargarLista(modelo);
     }
 
     @SuppressWarnings("unchecked")
@@ -100,7 +100,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
                 throw new Errores.CamposVaciosException();
             }
 
-            CRUD_Productos.crud.cargarProducto(textID.getText());
+            Productos.crud.cargarProducto(textID.getText());
             Utilidades.cerrarMarco(this);
         
         } catch(Errores.CamposVaciosException ex) {
@@ -110,20 +110,17 @@ public class MarcoListaProductos extends javax.swing.JFrame {
     }
     
     public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(() -> {
             
-            try {
+        try {
                 
-                Utilidades.setLookAndFeel();
-                MarcoListaProductos.m = new MarcoListaProductos();
-                Utilidades.ejecutarMarco(MarcoListaProductos.m);
+            Utilidades.setLookAndFeel();
+            MarcoListaProductos.m = new MarcoListaProductos();
+            Utilidades.ejecutarMarco(MarcoListaProductos.m);
                 
-            } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
                 
-                ex.printStackTrace();
-            }
-        });
+            ex.printStackTrace();
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

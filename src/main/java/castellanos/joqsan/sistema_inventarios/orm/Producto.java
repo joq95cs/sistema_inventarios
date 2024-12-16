@@ -1,14 +1,42 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import castellanos.joqsan.sistema_inventarios.logica.Hibernate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 @Entity
 @Table(name = "productos")
 public class Producto {
+    
+    public static Session session = null;
+    public static Class type = null;
+    
+    public static <T> void iniciar(Class<T> type) throws Errores.ConexionException {
+        
+        try {
+        
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            Hibernate.type = type;
+        
+        } catch(HibernateException ex) {
+            
+            throw new Errores.ConexionException();
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+        Hibernate.type = null;
+    }
     
     public Producto() {}
 

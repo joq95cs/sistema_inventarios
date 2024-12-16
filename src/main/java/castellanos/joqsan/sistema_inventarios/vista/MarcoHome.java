@@ -91,20 +91,17 @@ public class MarcoHome extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(() -> {
             
-            try {
+        try {
                 
-                Utilidades.setLookAndFeel();
-                MarcoHome.m = new MarcoHome();
-                Utilidades.ejecutarMarco(MarcoHome.m);
+            Utilidades.setLookAndFeel();
+            MarcoHome.m = new MarcoHome();
+            Utilidades.ejecutarMarco(MarcoHome.m);
+        
+        } catch (Errores.LookAndFeelException ex) {
                 
-            } catch (Exception ex) {
-                
-                ex.printStackTrace();
-            }
-        });
+            ex.printStackTrace();
+        }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

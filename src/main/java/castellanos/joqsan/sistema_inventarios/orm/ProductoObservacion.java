@@ -16,6 +16,12 @@ import java.util.GregorianCalendar;
 public class ProductoObservacion {
 
     public ProductoObservacion() {}
+    
+    public ProductoObservacion(String id_producto, String observaciones) {
+        
+        this.id_producto = id_producto;
+        this.observaciones = observaciones;
+    }
 
     public ProductoObservacion(String id_producto, String observaciones, GregorianCalendar fecha_hora) {
         
