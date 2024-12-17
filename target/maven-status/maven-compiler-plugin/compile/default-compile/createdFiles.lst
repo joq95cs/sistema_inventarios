@@ -1,7 +1,10 @@
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos$1.class
+castellanos\joqsan\sistema_inventarios\logica\ProductosObs.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$1.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome.class
 castellanos\joqsan\sistema_inventarios\orm\Proveedor.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoLogin$1.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$4.class
 castellanos\joqsan\sistema_inventarios\orm\EntradaObservacion.class
 castellanos\joqsan\sistema_inventarios\orm\EntradaPedido.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoLogin$2.class
@@ -10,7 +13,6 @@ castellanos\joqsan\sistema_inventarios\orm\SalidaObservacion.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoLogin.class
 castellanos\joqsan\sistema_inventarios\orm\Usuario.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$7.class
-castellanos\joqsan\sistema_inventarios\logica\CRUD_Productos.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos.class
 castellanos\joqsan\sistema_inventarios\orm\Producto.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome$1.class
@@ -20,6 +22,7 @@ castellanos\joqsan\sistema_inventarios\orm\UsuarioContacto.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$BusquedaException.class
 castellanos\joqsan\sistema_inventarios\orm\ProductoProveedor.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$2.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$EliminacionException.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$3.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$6.class
@@ -27,6 +30,7 @@ castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos.class
 castellanos\joqsan\sistema_inventarios\orm\Pedido.class
 castellanos\joqsan\sistema_inventarios\orm\ProveedorContacto.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$InsercionException.class
+castellanos\joqsan\sistema_inventarios\logica\Productos.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$5.class
 castellanos\joqsan\sistema_inventarios\orm\Salida.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$ActualizacionException.class
@@ -35,12 +39,12 @@ castellanos\joqsan\sistema_inventarios\orm\PedidoObservacion.class
 castellanos\joqsan\sistema_inventarios\Main.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$2.class
 castellanos\joqsan\sistema_inventarios\orm\Costos.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$3.class
 castellanos\joqsan\sistema_inventarios\orm\ProveedorObservacion.class
 castellanos\joqsan\sistema_inventarios\vista\Utilidades.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$ListaException.class
 castellanos\joqsan\sistema_inventarios\orm\ProductoPedido.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$ExcelException.class
-castellanos\joqsan\sistema_inventarios\logica\Hibernate.class
 castellanos\joqsan\sistema_inventarios\orm\Entrada.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$4.class
 castellanos\joqsan\sistema_inventarios\orm\AlmacenObservacion.class
@@ -49,6 +53,7 @@ castellanos\joqsan\sistema_inventarios\orm\ProductoPrecio.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$LoginException.class
 castellanos\joqsan\sistema_inventarios\orm\ProductoStock.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$1.class
+castellanos\joqsan\sistema_inventarios\logica\Errores$CargarException.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome$2.class
 castellanos\joqsan\sistema_inventarios\logica\Login.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoLogin$3.class

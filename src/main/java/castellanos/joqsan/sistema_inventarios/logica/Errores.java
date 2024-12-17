@@ -132,4 +132,17 @@ public class Errores {
             super("Error de Look And Feel");
         }
     }
+    
+    public static class CargarException extends Exception {
+        
+        public CargarException(String m) {
+            
+            super(m);
+        }
+        
+        public CargarException() {
+            
+            super("Error al cargar registro");
+        }
+    }
 }

@@ -1,21 +1,55 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
     
-    public Usuario() {}
+    public static Session session = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+            
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Usuario.class).buildSessionFactory().openSession();
+            
+        } catch(HibernateException ex) {
+            
+            throw new Errores.ConexionException();
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+    }
+    
+    public Usuario() {
+    
+        this.id = 0;
+        this.username = null;
+        this.password = null;
+        this.nombre = null;
+        this.apellido_paterno = null;
+        this.apellido_materno = null;
+        this.tipo_usuario = null;
+    }
     
     public Usuario(String username, String password, String nombre, String apellido_paterno, String apellido_materno, String tipo_usuario) {
         
+        this.id = 0;
         this.username = username;
         this.password = password;
         this.nombre = nombre;

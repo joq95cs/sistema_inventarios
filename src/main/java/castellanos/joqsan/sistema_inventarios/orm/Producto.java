@@ -2,7 +2,6 @@
 package castellanos.joqsan.sistema_inventarios.orm;
 
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
-import castellanos.joqsan.sistema_inventarios.logica.Hibernate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,14 +15,12 @@ import org.hibernate.cfg.Configuration;
 public class Producto {
     
     public static Session session = null;
-    public static Class type = null;
     
-    public static <T> void iniciar(Class<T> type) throws Errores.ConexionException {
+    public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-            Hibernate.type = type;
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Producto.class).buildSessionFactory().openSession();
         
         } catch(HibernateException ex) {
             
@@ -35,10 +32,19 @@ public class Producto {
         
         session.getSessionFactory().close();
         session.close();
-        Hibernate.type = null;
     }
     
-    public Producto() {}
+    public Producto() {
+        
+        this.id = null;
+        this.nombre = null;
+        this.categoria = null;
+        this.stock_min = 0;
+        this.stock_max = 0;
+        this.stock_ideal = 0;
+        this.stock_reorden = 0;
+        this.stock_max_pedido = 0;
+    }
 
     public Producto(String id, String nombre, String categoria, int stock_min, int stock_max, int stock_ideal, int stock_reorden, int stock_max_pedido) {
         

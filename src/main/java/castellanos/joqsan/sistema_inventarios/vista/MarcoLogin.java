@@ -2,8 +2,8 @@
 package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
-import castellanos.joqsan.sistema_inventarios.logica.Hibernate;
 import castellanos.joqsan.sistema_inventarios.logica.Login;
+import castellanos.joqsan.sistema_inventarios.orm.Usuario;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 import java.security.NoSuchAlgorithmException;
@@ -146,9 +146,9 @@ public class MarcoLogin extends javax.swing.JFrame {
             
         } finally {
             
-            if(Hibernate.type != null) {
+            if(Usuario.session != null) {
                 
-                Hibernate.cerrar();
+                Usuario.cerrar();
             }
         }
     }

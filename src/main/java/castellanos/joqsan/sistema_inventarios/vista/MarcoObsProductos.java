@@ -3,7 +3,11 @@ package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.Productos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import castellanos.joqsan.sistema_inventarios.logica.ProductosObs;
+import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.orm.ProductoObservacion;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class MarcoObsProductos extends javax.swing.JFrame {
     
@@ -14,6 +18,11 @@ public class MarcoObsProductos extends javax.swing.JFrame {
         initComponents();
         Utilidades.centrarMarco(this);
         setResizable(false);
+        
+        if(ProductosObs.crud == null) {
+            
+            ProductosObs.crud = new ProductosObs();
+        }
         
         if(Productos.crud == null) {
             
@@ -37,6 +46,11 @@ public class MarcoObsProductos extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Observaciones de Productos");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         labelId.setText("ID Producto");
 
@@ -54,10 +68,25 @@ public class MarcoObsProductos extends javax.swing.JFrame {
         });
 
         buttonBuscar.setText("BUSCAR");
+        buttonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonBuscarActionPerformed(evt);
+            }
+        });
 
         buttonActualizar.setText("ACTUALIZAR");
+        buttonActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonActualizarActionPerformed(evt);
+            }
+        });
 
         buttonEliminar.setText("ELIMINAR");
+        buttonEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonEliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,20 +141,91 @@ public class MarcoObsProductos extends javax.swing.JFrame {
         insertar();
     }//GEN-LAST:event_buttonInsertarActionPerformed
 
+    private void buttonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBuscarActionPerformed
+       
+        buscar();
+    }//GEN-LAST:event_buttonBuscarActionPerformed
+
+    private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
+
+        eliminar();
+    }//GEN-LAST:event_buttonEliminarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+   
+        if(ProductoObservacion.session != null) {
+              
+            ProductoObservacion.cerrar();
+        }
+        
+        if(Producto.session != null) {
+            
+            Producto.cerrar();
+        }
+    }//GEN-LAST:event_formWindowClosing
+
+    private void buttonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActualizarActionPerformed
+
+        actualizar();
+    }//GEN-LAST:event_buttonActualizarActionPerformed
+
     private void insertar() {
         
         try {
             
-            String id = textId.getText();
-            String obs = areaObs.getText();
+            String id_producto = textId.getText();
+            String observaciones = areaObs.getText();
             
-            if(id.isEmpty() || obs.isEmpty()) {
+            if(id_producto.isEmpty() || observaciones.isEmpty()) {
                 
                 throw new Errores.CamposVaciosException();
             }
             
-            Productos.crud.buscarProducto(id);
-            ProductoObservacion pobs = new ProductoObservacion(id, obs);
+            Productos.crud.buscarProducto(id_producto);
+            
+            if(Productos.crud.getProducto() == null) {
+                
+                throw new Exception("Registro no encontrado");
+            }
+            
+            ProductoObservacion pobs = new ProductoObservacion(id_producto, observaciones);
+            ProductosObs.crud.setPobs(pobs);
+            ProductosObs.crud.insertarObservacion();
+            Utilidades.limpiarCampos(new JTextField[] {
+                textId}, areaObs);
+            ProductosObs.crud.setPobs(null);
+            JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+        } catch(Exception ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void buscar() {
+    
+        try {
+            
+            String id_producto = textId.getText();
+            
+            if(id_producto.isEmpty()) {
+                
+                throw new Errores.CamposVaciosException();
+            }
+            
+            ProductosObs.crud.buscarObservacion(id_producto);
+            cargar();
+            
+        } catch(Errores.BusquedaException | Errores.CamposVaciosException ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void actualizar() {
+    
+        try {
+            
             
         } catch(Exception ex) {
             
@@ -133,11 +233,34 @@ public class MarcoObsProductos extends javax.swing.JFrame {
         }
     }
     
-    private void buscar() {}
+    private void eliminar() {
     
-    private void actualizar() {}
+        try {
+            
+            String id_producto = textId.getText();
+            
+            if(id_producto.isEmpty()) {
+                
+                throw new Errores.CamposVaciosException();
+            }
+            
+            ProductosObs.crud.eliminarObservacion(id_producto);
+            ProductosObs.crud.setPobs(null);
+            Utilidades.limpiarCampos(new JTextField[] {
+                textId}, areaObs);
+            JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+        } catch(Exception ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
-    private void eliminar() {}
+    private void cargar() {
+        
+        textId.setText(ProductosObs.crud.getPobs().getId_producto());
+        areaObs.setText(ProductosObs.crud.getPobs().getObservaciones());
+    }
     
     public static void main(String[] args) {
         

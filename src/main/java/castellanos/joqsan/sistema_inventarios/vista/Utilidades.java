@@ -5,6 +5,7 @@ import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -50,11 +51,16 @@ public class Utilidades {
         }
     }
     
-    public static void limpiarCampos(JTextField[] campos) {
+    public static void limpiarCampos(JTextField[] campos, JTextArea area) {
         
         for(JTextField each: campos) {
             
             each.setText("");
         }
-    }
+        
+        if(area != null) {
+            
+            area.setText("");
+        }
+    }  
 }

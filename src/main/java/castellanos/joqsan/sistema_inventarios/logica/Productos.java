@@ -19,9 +19,9 @@ public class Productos {
 
     public Productos() throws Errores.ConexionException {
         
-        if(Hibernate.type == null || !Hibernate.type.equals(Producto.class)) {
+        if(Producto.session == null) {
             
-            Hibernate.iniciar(Producto.class);
+            Producto.iniciar();
         }
         
         producto = null;
@@ -41,15 +41,15 @@ public class Productos {
         
         try {
         
-            Hibernate.session.beginTransaction();
-            Hibernate.session.persist(producto);
-            Hibernate.session.getTransaction().commit();
+            Producto.session.beginTransaction();
+            Producto.session.persist(producto);
+            Producto.session.getTransaction().commit();
         
         } catch(Exception ex) {
             
-            if(Hibernate.session.getTransaction() != null) {
+            if(Producto.session.getTransaction() != null) {
                 
-                Hibernate.session.getTransaction().rollback();
+                Producto.session.getTransaction().rollback();
             }
             
             throw new Errores.InsercionException();
@@ -60,7 +60,7 @@ public class Productos {
         
         try {
             
-            producto = Hibernate.session.get(Producto.class, id);
+            producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
@@ -77,25 +77,25 @@ public class Productos {
         
         try {
             
-            Hibernate.session.beginTransaction();
+            Producto.session.beginTransaction();
             
             if(this.producto != null) {
                 
                 if(!this.producto.getId().equals(producto.getId())) {
                 
                     String hql = "UPDATE Producto p1 SET p1.id = :id2 WHERE p1.id = :id1"; 
-                    Query query = Hibernate.session.createQuery(hql);
+                    Query query = Producto.session.createQuery(hql);
                     query.setParameter("id2", producto.getId());
                     query.setParameter("id1", this.producto.getId());
                     query.executeUpdate();
                     
-                    this.producto = Hibernate.session.get(Producto.class, producto.getId());
+                    this.producto = Producto.session.get(Producto.class, producto.getId());
                     
                 }
  
             } else {
                 
-                this.producto = Hibernate.session.get(Producto.class, producto.getId());
+                this.producto = Producto.session.get(Producto.class, producto.getId());
             }
             
             this.producto.setNombre(producto.getNombre());
@@ -106,13 +106,13 @@ public class Productos {
             this.producto.setStock_reorden(producto.getStock_reorden());
             this.producto.setStock_max_pedido(producto.getStock_max_pedido());
 
-            Hibernate.session.getTransaction().commit();
+            Producto.session.getTransaction().commit();
             
         } catch(Exception ex) {
             
-            if(Hibernate.session.getTransaction() != null) {
+            if(Producto.session.getTransaction() != null) {
                 
-                Hibernate.session.getTransaction().rollback();
+                Producto.session.getTransaction().rollback();
             }
             
             throw new Errores.ActualizacionException();
@@ -123,22 +123,22 @@ public class Productos {
         
         try {
             
-            Hibernate.session.beginTransaction();
-            producto = Hibernate.session.get(Producto.class, id);
+            Producto.session.beginTransaction();
+            producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
                 throw new Exception("Registro no encontrado");
             }
             
-            Hibernate.session.remove(producto);
-            Hibernate.session.getTransaction().commit();
+            Producto.session.remove(producto);
+            Producto.session.getTransaction().commit();
             
         } catch(Exception ex) {
             
-            if(Hibernate.session.getTransaction() != null) {
+            if(Producto.session.getTransaction() != null) {
                 
-                Hibernate.session.getTransaction().rollback();
+                Producto.session.getTransaction().rollback();
             }
             
             throw new Errores.EliminacionException(ex.getMessage());
@@ -172,32 +172,32 @@ public class Productos {
                 }
             }
             
-            Hibernate.session.beginTransaction();
+            Producto.session.beginTransaction();
 
             for(Producto each : registros) {
                 
-                Hibernate.session.persist(each);
+                Producto.session.persist(each);
             }
             
-            Hibernate.session.getTransaction().commit();
+            Producto.session.getTransaction().commit();
             
         } catch(Exception ex) {
             
-            if(Hibernate.session.getTransaction() != null) {
+            if(Producto.session.getTransaction() != null) {
                 
-                Hibernate.session.getTransaction().rollback();
+                Producto.session.getTransaction().rollback();
             }
             
             throw new Errores.ExcelException();
         }
     }
     
-    public void cargarLista(DefaultTableModel modelo) {
+    public void cargarLista(DefaultTableModel modelo) throws Errores.ListaException {
         
         try {
             
             String hql = "FROM Producto";
-            ArrayList<Producto> productos = new ArrayList<>(Hibernate.session.createQuery(hql).list());
+            ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
             
             for(Producto each: productos) {
                 
@@ -216,14 +216,17 @@ public class Productos {
                 modelo.addRow(fila);
             }
             
-        } catch(Exception ex) {}
+        } catch(Exception ex) {
+            
+            throw new Errores.ListaException();
+        }
     }
     
-    public void cargarProducto(String id) {
+    public void cargarProducto(String id) throws Errores.CargarException {
         
         try {
             
-            producto = Hibernate.session.get(Producto.class, id);
+            producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
@@ -235,7 +238,7 @@ public class Productos {
             
         } catch(Exception ex) {
             
-            
+            throw new Errores.CargarException();
         }
     }
     

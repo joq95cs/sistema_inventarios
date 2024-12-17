@@ -10,7 +10,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
     
     public static MarcoListaProductos m = null;
 
-    public MarcoListaProductos() throws Errores.ConexionException, Errores.LookAndFeelException {
+    public MarcoListaProductos() throws Errores.ConexionException, Errores.LookAndFeelException, Errores.ListaException {
         
         initComponents();
         Utilidades.centrarMarco(this);
@@ -103,7 +103,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             Productos.crud.cargarProducto(textID.getText());
             Utilidades.cerrarMarco(this);
         
-        } catch(Errores.CamposVaciosException ex) {
+        } catch(Errores.CamposVaciosException | Errores.CargarException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -117,7 +117,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             MarcoListaProductos.m = new MarcoListaProductos();
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
                 
-        } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch (Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
                 
             ex.printStackTrace();
         }

@@ -11,9 +11,9 @@ public class Login {
 
     public Login(String username, String password) throws Errores.ConexionException {
         
-        if(Hibernate.type == null || !Hibernate.type.equals(Usuario.class)) {
+        if(Usuario.session == null) {
             
-            Hibernate.iniciar(Usuario.class);
+            Usuario.iniciar();
         }
         
         this.username = username;
@@ -23,7 +23,7 @@ public class Login {
     public boolean usuarioValido() throws NoSuchAlgorithmException {
         
         String hql = "FROM Usuario u1 WHERE u1.username = :user AND u1.password = :pass";   
-        Query query = Hibernate.session.createQuery(hql);
+        Query query = Usuario.session.createQuery(hql);
         query.setParameter("user", username);
         query.setParameter("pass", getSHA_256());
         ArrayList<Usuario> consulta = new ArrayList<>(query.list());

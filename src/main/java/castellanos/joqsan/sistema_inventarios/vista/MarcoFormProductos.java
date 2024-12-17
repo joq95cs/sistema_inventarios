@@ -3,7 +3,6 @@ package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.Productos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
-import castellanos.joqsan.sistema_inventarios.logica.Hibernate;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import java.awt.HeadlessException;
 import java.io.File;
@@ -240,9 +239,9 @@ public class MarcoFormProductos extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
-        if(Hibernate.type != null) {
+        if(Producto.session != null) {
                 
-            Hibernate.cerrar();
+            Producto.cerrar();
         }
         
         Utilidades.cerrarMarco(this);
@@ -306,7 +305,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             Productos.crud.setProducto(producto);
             Productos.crud.insertarProducto();
             Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
             
             Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
@@ -391,7 +390,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             Productos.crud.actualizarProducto(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
             
             Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
             
             Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
@@ -422,7 +421,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             
             Productos.crud.eliminarProducto(id);
             Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido});
+                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
             
             Productos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
@@ -475,7 +474,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch(Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch(Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
