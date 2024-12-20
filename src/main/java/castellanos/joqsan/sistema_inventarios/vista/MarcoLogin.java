@@ -2,7 +2,7 @@
 package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
-import castellanos.joqsan.sistema_inventarios.logica.Login;
+import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
 import castellanos.joqsan.sistema_inventarios.orm.Usuario;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
@@ -124,7 +124,7 @@ public class MarcoLogin extends javax.swing.JFrame {
                 throw new Errores.CamposVaciosException();
             }
 
-            Login login = new Login(username, password);
+            LogicaLogin login = new LogicaLogin(username, password);
         
             if(login.usuarioValido()) {
                 

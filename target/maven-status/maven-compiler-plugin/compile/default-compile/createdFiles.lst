@@ -14,6 +14,7 @@ castellanos\joqsan\sistema_inventarios\vista\MarcoLogin.class
 castellanos\joqsan\sistema_inventarios\orm\Usuario.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$7.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$5.class
 castellanos\joqsan\sistema_inventarios\orm\Producto.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome$1.class
 castellanos\joqsan\sistema_inventarios\orm\Almacen.class

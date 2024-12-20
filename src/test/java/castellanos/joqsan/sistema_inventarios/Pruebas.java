@@ -2,8 +2,8 @@
 package castellanos.joqsan.sistema_inventarios;
 
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
-import castellanos.joqsan.sistema_inventarios.logica.Login;
-import castellanos.joqsan.sistema_inventarios.logica.Productos;
+import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
+import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.orm.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.GregorianCalendar;
@@ -23,9 +23,9 @@ public class Pruebas {
             prod.setNombre("Saludando");
             prod.setCategoria("Nada que decir");
             
-            Productos.crud = new Productos();
-            Productos.crud.setProducto(prod);
-            Productos.crud.insertarProducto();
+            LogicaProductos.crud = new LogicaProductos();
+            LogicaProductos.crud.setProducto(prod);
+            LogicaProductos.crud.insertarProducto();
             
         } catch(Exception ex) {
             
@@ -62,7 +62,7 @@ public class Pruebas {
         
             String user = JOptionPane.showInputDialog("Ingresa usuario");
             String password = JOptionPane.showInputDialog("Ingresa contraseña");
-            Login login = new Login(user, password);
+            LogicaLogin login = new LogicaLogin(user, password);
             assertEquals(true, login.usuarioValido(), "Es valido");
         
         } catch(Errores.ConexionException | NoSuchAlgorithmException ex) {

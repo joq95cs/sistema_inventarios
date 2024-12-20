@@ -12,8 +12,6 @@ import jakarta.persistence.Table;
 @Table(name = "pedidos")
 public class Pedido {
     
-    public Pedido() {}
-
     public Pedido(String fecha_pedido, String fecha_llegada, double costo_pedido, int id_proveedor_contacto, String estatus) {
         
         this.fecha_pedido = fecha_pedido;

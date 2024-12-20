@@ -1,6 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,28 +10,59 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 
 @Entity
 @Table(name = "salidas")
 public class Salida {
     
-    public Salida() {}
-
-    public Salida(String id_producto, int cantidad, GregorianCalendar fecha_hora) {
+    public static Session session = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
         
-        this.id_producto = id_producto;
-        this.cantidad = cantidad;
-        this.fecha_hora = fecha_hora;
+        try {
+        
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Salida.class).buildSessionFactory().openSession();
+        
+        } catch(HibernateException ex) {
+            
+            throw new Errores.ConexionException();
+        }
     }
     
-    public Salida(int id, String id_producto, int cantidad, GregorianCalendar fecha_hora) {
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+    }
+    
+    public Salida() {
+    
+        this.id = 0;
+        this.id_producto = null;
+        this.cantidad = 0;
+        this.fecha_hora = new GregorianCalendar().getTime();
+    }
+
+    public Salida(String id_producto, int cantidad) {
+        
+        this.id = 0;
+        this.id_producto = id_producto;
+        this.cantidad = cantidad;
+        this.fecha_hora = new GregorianCalendar().getTime();
+    }
+    
+    public Salida(int id, String id_producto, int cantidad) {
         
         this.id = id;
         this.id_producto = id_producto;
         this.cantidad = cantidad;
-        this.fecha_hora = fecha_hora;
+        this.fecha_hora = new GregorianCalendar().getTime();
     }
 
     public int getId() {
@@ -63,12 +95,12 @@ public class Salida {
         this.cantidad = cantidad;
     }
 
-    public GregorianCalendar getFecha_hora() {
+    public Date getFecha_hora() {
         
         return fecha_hora;
     }
 
-    public void setFecha_hora(GregorianCalendar fecha_hora) {
+    public void setFecha_hora(Date fecha_hora) {
         
         this.fecha_hora = fecha_hora;
     }
@@ -92,5 +124,5 @@ public class Salida {
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_hora")
-    private GregorianCalendar fecha_hora;
+    private Date fecha_hora;
 }

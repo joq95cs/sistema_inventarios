@@ -9,19 +9,27 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 @Entity
 @Table(name = "pedidos_observaciones")
 public class PedidoObservacion {
     
-    public PedidoObservacion() {}
+    public PedidoObservacion() {
+    
+        this.id = 0;
+        this.id_pedido = 0;
+        this.observaciones = null;
+        this.fecha_hora = new GregorianCalendar().getTime();
+    }
 
     public PedidoObservacion(int id_pedido, String observaciones, GregorianCalendar fecha_hora) {
         
+        this.id = 0;
         this.id_pedido = id_pedido;
         this.observaciones = observaciones;
-        this.fecha_hora = fecha_hora;
+        this.fecha_hora = new GregorianCalendar().getTime();
     }
 
     public PedidoObservacion(int id, int id_pedido, String observaciones, GregorianCalendar fecha_hora) {
@@ -29,7 +37,7 @@ public class PedidoObservacion {
         this.id = id;
         this.id_pedido = id_pedido;
         this.observaciones = observaciones;
-        this.fecha_hora = fecha_hora;
+        this.fecha_hora = new GregorianCalendar().getTime();
     }
 
     public int getId() {
@@ -62,12 +70,12 @@ public class PedidoObservacion {
         this.observaciones = observaciones;
     }
 
-    public GregorianCalendar getFecha_hora() {
+    public Date getFecha_hora() {
         
         return fecha_hora;
     }
 
-    public void setFecha_hora(GregorianCalendar fecha_hora) {
+    public void setFecha_hora(Date fecha_hora) {
         
         this.fecha_hora = fecha_hora;
     }
@@ -91,5 +99,5 @@ public class PedidoObservacion {
     
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_hora")
-    private GregorianCalendar fecha_hora;
+    private Date fecha_hora;
 }

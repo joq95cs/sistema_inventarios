@@ -1,21 +1,51 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 @Entity
 @Table(name = "proveedores")
 public class Proveedor {
     
-    public Proveedor() {}
+    public static Session session;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Proveedor.class).buildSessionFactory().openSession();
+        
+        } catch(HibernateException ex) {
+            
+            throw new Errores.ConexionException();
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+    }
+    
+    public Proveedor() {
+        
+        this.id = 0;
+        this.nombre = null;
+        this.direccion = null;
+    }
 
     public Proveedor(String nombre, String direccion) {
         
+        this.id = 0;
         this.nombre = nombre;
         this.direccion = direccion;
     }
@@ -60,7 +90,7 @@ public class Proveedor {
     @Override
     public String toString() {
         
-        return "Proveedores{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + '}';
+        return "Proveedor{" + "id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + '}';
     }
     
     @Id

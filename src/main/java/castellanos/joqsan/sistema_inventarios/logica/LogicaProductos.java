@@ -13,11 +13,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.query.Query;
 
-public class Productos {
+public class LogicaProductos {
     
-    public static Productos crud = null;
+    public static LogicaProductos crud = null;
 
-    public Productos() throws Errores.ConexionException {
+    public LogicaProductos() throws Errores.ConexionException {
         
         if(Producto.session == null) {
             
@@ -83,14 +83,12 @@ public class Productos {
                 
                 if(!this.producto.getId().equals(producto.getId())) {
                 
-                    String hql = "UPDATE Producto p1 SET p1.id = :id2 WHERE p1.id = :id1"; 
+                    String hql = "UPDATE Producto producto SET producto.id = :id2 WHERE producto.id = :id1"; 
                     Query query = Producto.session.createQuery(hql);
                     query.setParameter("id2", producto.getId());
                     query.setParameter("id1", this.producto.getId());
                     query.executeUpdate();
-                    
                     this.producto = Producto.session.get(Producto.class, producto.getId());
-                    
                 }
  
             } else {
@@ -105,7 +103,6 @@ public class Productos {
             this.producto.setStock_ideal(producto.getStock_ideal());
             this.producto.setStock_reorden(producto.getStock_reorden());
             this.producto.setStock_max_pedido(producto.getStock_max_pedido());
-
             Producto.session.getTransaction().commit();
             
         } catch(Exception ex) {

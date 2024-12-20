@@ -1,7 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.vista;
 
-import castellanos.joqsan.sistema_inventarios.logica.Productos;
+import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -26,12 +26,12 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         modelo.addColumn("Stock Máximo Pedido");
         tableProductos.setModel(modelo);
         
-        if(Productos.crud == null) {
+        if(LogicaProductos.crud == null) {
             
-            Productos.crud = new Productos();
+            LogicaProductos.crud = new LogicaProductos();
         }
         
-        Productos.crud.cargarLista(modelo);
+        LogicaProductos.crud.cargarLista(modelo);
     }
 
     @SuppressWarnings("unchecked")
@@ -100,7 +100,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
                 throw new Errores.CamposVaciosException();
             }
 
-            Productos.crud.cargarProducto(textID.getText());
+            LogicaProductos.crud.cargarProducto(textID.getText());
             Utilidades.cerrarMarco(this);
         
         } catch(Errores.CamposVaciosException | Errores.CargarException ex) {

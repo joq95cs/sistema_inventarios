@@ -7,9 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import org.hibernate.query.Query;
 
-public class Login {
+public class LogicaLogin {
 
-    public Login(String username, String password) throws Errores.ConexionException {
+    public LogicaLogin(String username, String password) throws Errores.ConexionException {
         
         if(Usuario.session == null) {
             

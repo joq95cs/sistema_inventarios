@@ -1,18 +1,47 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 @Entity
 @Table(name = "proveedores_contactos")
 public class ProveedorContacto {
     
-    public ProveedorContacto() {}
+    public static Session session = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(ProveedorContacto.class).buildSessionFactory().openSession();
+        
+        } catch(HibernateException ex) {
+            
+            throw new Errores.ConexionException();
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+    }
+    
+    public ProveedorContacto() {
+    
+        this.id = 0;
+        this.id_proveedor = 0;
+        this.contacto = null;
+    }
 
     public ProveedorContacto(int id_proveedor, String tipo_contacto, String contacto) {
         
@@ -74,7 +103,7 @@ public class ProveedorContacto {
         
         return "ProveedorContacto{" + "id=" + id + ", id_proveedor=" + id_proveedor + ", tipo_contacto=" + tipo_contacto + ", contacto=" + contacto + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
