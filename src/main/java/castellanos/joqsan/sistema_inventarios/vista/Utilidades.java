@@ -62,5 +62,15 @@ public class Utilidades {
             
             area.setText("");
         }
+    }
+    
+    public static String obtenerCadena(JTextField campo) {
+        
+        if(campo.getText().isEmpty() || campo.getText().isBlank()) {
+            
+            return null;
+        }
+        
+        return campo.getText().trim();
     }  
 }

@@ -3,7 +3,12 @@ package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import java.awt.HeadlessException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 
 public class MarcoListaProductos extends javax.swing.JFrame {
@@ -14,40 +19,31 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         
         initComponents();
         Utilidades.centrarMarco(this);
-        
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("ID (Clave)");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Categoría");
-        modelo.addColumn("Stock Mínimo");
-        modelo.addColumn("Stock Máximo");
-        modelo.addColumn("Stock Ideal");
-        modelo.addColumn("Stock Reorden");
-        modelo.addColumn("Stock Máximo Pedido");
-        tableProductos.setModel(modelo);
+        setResizable(false);
         
         if(LogicaProductos.crud == null) {
             
             LogicaProductos.crud = new LogicaProductos();
         }
         
-        LogicaProductos.crud.cargarLista(modelo);
+        cargar();
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        labelID = new javax.swing.JLabel();
         scrollLista = new javax.swing.JScrollPane();
         tableProductos = new javax.swing.JTable();
-        p1 = new javax.swing.JPanel();
-        labelID = new javax.swing.JLabel();
         textID = new javax.swing.JTextField();
         buttonActualizar = new javax.swing.JButton();
         buttonEliminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Lista de Productos");
+
+        labelID.setText("ID (Clave)");
 
         tableProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -62,13 +58,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         ));
         scrollLista.setViewportView(tableProductos);
 
-        getContentPane().add(scrollLista, java.awt.BorderLayout.CENTER);
-
-        labelID.setText("ID (Clave)");
-        p1.add(labelID);
-
         textID.setColumns(10);
-        p1.add(textID);
 
         buttonActualizar.setText("EDITAR");
         buttonActualizar.addActionListener(new java.awt.event.ActionListener() {
@@ -76,31 +66,71 @@ public class MarcoListaProductos extends javax.swing.JFrame {
                 buttonActualizarActionPerformed(evt);
             }
         });
-        p1.add(buttonActualizar);
 
         buttonEliminar.setText("ELIMINAR");
-        p1.add(buttonEliminar);
+        buttonEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonEliminarActionPerformed(evt);
+            }
+        });
 
-        getContentPane().add(p1, java.awt.BorderLayout.PAGE_END);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrollLista, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelID)
+                        .addGap(18, 18, 18)
+                        .addComponent(textID, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonActualizar)
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonEliminar)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(scrollLista, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelID)
+                        .addComponent(textID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(buttonActualizar)
+                        .addComponent(buttonEliminar)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActualizarActionPerformed
         
-        editar();
+        editar(Utilidades.obtenerCadena(textID));
     }//GEN-LAST:event_buttonActualizarActionPerformed
 
-    private void editar() {
+    private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
+       
+        eliminar();
+    }//GEN-LAST:event_buttonEliminarActionPerformed
+
+    private void editar(String id) {
         
         try {
             
-            if(textID.getText().isEmpty()) {
+            if(id == null) {
 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Campo de ID vacío");
             }
 
-            LogicaProductos.crud.cargarProducto(textID.getText());
+            LogicaProductos.crud.cargarProducto(id);
             Utilidades.cerrarMarco(this);
         
         } catch(Errores.CamposVaciosException | Errores.CargarException ex) {
@@ -108,6 +138,73 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private void eliminar() {
+        
+        try {
+            
+            if(Utilidades.obtenerCadena(textID) == null) {
+
+                throw new Errores.CamposVaciosException("Campo de ID vacío");
+            }
+            
+            LogicaProductos.crud.eliminarProducto(Utilidades.obtenerCadena(textID));
+            JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            cargar();
+            
+        } catch(Errores.CamposVaciosException | Errores.EliminacionException | Errores.ListaException | HeadlessException ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void cargar() throws Errores.ListaException {
+        
+        DefaultTableModel modelo = new DefaultTableModel() {
+        
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                
+                return false;
+            }
+        };
+        
+        modelo.addColumn("ID (Clave)");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Categoría");
+        modelo.addColumn("Stock Mínimo");
+        modelo.addColumn("Stock Máximo");
+        modelo.addColumn("Stock Ideal");
+        modelo.addColumn("Stock Reorden");
+        modelo.addColumn("Stock Máximo Pedido");
+        tableProductos.setModel(modelo);
+        tableProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        LogicaProductos.crud.cargarLista(modelo);
+        
+        tableProductos.getSelectionModel().addListSelectionListener((ListSelectionEvent evt) -> {
+            
+            if(!evt.getValueIsAdjusting() && tableProductos.getSelectedRow() != -1) {
+                
+                textID.setText(tableProductos.getValueAt(tableProductos.getSelectedRow(), 0) + "");
+            }
+        });
+        
+        tableProductos.addMouseListener(new MouseAdapter() {
+        
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                
+                if(evt.getClickCount() == 2) {
+                   
+                    if(tableProductos.getSelectedRow() != -1) {
+                
+                        editar(tableProductos.getValueAt(tableProductos.getSelectedRow(), 0) + "");
+                    } 
+                }
+            }
+        });
+    }   
     
     public static void main(String args[]) {
             
@@ -127,7 +224,6 @@ public class MarcoListaProductos extends javax.swing.JFrame {
     private javax.swing.JButton buttonActualizar;
     private javax.swing.JButton buttonEliminar;
     private javax.swing.JLabel labelID;
-    private javax.swing.JPanel p1;
     private javax.swing.JScrollPane scrollLista;
     private javax.swing.JTable tableProductos;
     private javax.swing.JTextField textID;

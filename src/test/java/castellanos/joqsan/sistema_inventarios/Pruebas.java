@@ -5,9 +5,11 @@ import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.orm.*;
+import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
 import java.security.NoSuchAlgorithmException;
 import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +53,7 @@ public class Pruebas {
             
         } catch(Exception ex) {
             
-            
+            ex.printStackTrace();
         }
     }
     
@@ -70,4 +72,41 @@ public class Pruebas {
             ex.printStackTrace();
         }
     }
+    
+    @Test
+    public void agregarUsuario() {
+        
+        boolean ok = false;
+        
+        try {
+            
+            Usuario.iniciar();
+            Usuario.session.beginTransaction();
+            Usuario usuario = new Usuario();
+            usuario.setNombre("Adalid");
+            usuario.setApellido_paterno("Castellanos");
+            usuario.setUsername("joq");
+            usuario.setPassword("123");
+            usuario.setApellido_materno("No definido");
+            Usuario.session.persist(usuario);
+            Usuario.session.getTransaction().commit();
+            
+            ok = true;
+            
+        } catch(Exception ex) {
+            
+            ok = false;
+            ex.printStackTrace();
+            
+        } finally {
+            
+            assertEquals(true, ok);
+        }
+    }
+    
+    @Test
+    public void probarEditarExcel() {
+        
+        
+    }       
 }

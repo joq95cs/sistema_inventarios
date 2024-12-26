@@ -4,8 +4,12 @@ package castellanos.joqsan.sistema_inventarios.vista;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
+import java.awt.Desktop;
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -29,6 +33,17 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             
             cargar();
         }
+        
+        campos = new JTextField[] {
+            textId,
+            textNombre,
+            textCategoria,
+            textStockMin,
+            textStockMax,
+            textStockIdeal,
+            textStockMaxPedido,
+            textStockReorden
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -55,8 +70,9 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         buttonBuscar = new javax.swing.JButton();
         buttonActualizar = new javax.swing.JButton();
         buttonEliminar = new javax.swing.JButton();
-        buttonExcel = new javax.swing.JButton();
+        buttonCargarExcel = new javax.swing.JButton();
         buttonLista = new javax.swing.JButton();
+        buttonEditarExcel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Formulario Productos");
@@ -110,10 +126,10 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             }
         });
 
-        buttonExcel.setText("EXCEL");
-        buttonExcel.addActionListener(new java.awt.event.ActionListener() {
+        buttonCargarExcel.setText("CARGAR");
+        buttonCargarExcel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonExcelActionPerformed(evt);
+                buttonCargarExcelActionPerformed(evt);
             }
         });
 
@@ -121,6 +137,13 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         buttonLista.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonListaActionPerformed(evt);
+            }
+        });
+
+        buttonEditarExcel.setText("EDITAR");
+        buttonEditarExcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonEditarExcelActionPerformed(evt);
             }
         });
 
@@ -152,15 +175,17 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                             .addComponent(textId, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(textStockMaxPedido)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(buttonExcel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonInsertar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(buttonInsertar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonLista, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(buttonBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonLista, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonActualizar)
+                            .addComponent(buttonCargarExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(buttonEditarExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addComponent(buttonEliminar)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -209,8 +234,9 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                     .addComponent(buttonEliminar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonExcel)
-                    .addComponent(buttonLista))
+                    .addComponent(buttonCargarExcel)
+                    .addComponent(buttonLista)
+                    .addComponent(buttonEditarExcel))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -247,66 +273,74 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         Utilidades.cerrarMarco(this);
     }//GEN-LAST:event_formWindowClosing
 
-    private void buttonExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExcelActionPerformed
-
-        excel();
-    }//GEN-LAST:event_buttonExcelActionPerformed
-
     private void buttonListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonListaActionPerformed
 
         lista();
     }//GEN-LAST:event_buttonListaActionPerformed
 
+    private void buttonCargarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCargarExcelActionPerformed
+
+        cargarExcel();
+    }//GEN-LAST:event_buttonCargarExcelActionPerformed
+
+    private void buttonEditarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditarExcelActionPerformed
+    
+        editarExcel();
+    }//GEN-LAST:event_buttonEditarExcelActionPerformed
+
     private void insertar() {
         
         try {
             
-            String id = textId.getText();
-            String nombre = textNombre.getText();
-            String categoria = textCategoria.getText();
-            
-            if(id.isEmpty() || nombre.isEmpty() || categoria.isEmpty()) {
+            if(Utilidades.obtenerCadena(textId) == null ||
+               Utilidades.obtenerCadena(textNombre) == null) {
                 
                 throw new Errores.CamposVaciosException();
             }
             
+            String id = Utilidades.obtenerCadena(textId);
+            String nombre = Utilidades.obtenerCadena(textNombre);
+            String categoria = "No definido";
             int stock_min = 0;
             int stock_max = 0;
             int stock_ideal = 0;
             int stock_reorden = 0;
             int stock_max_pedido = 0;
             
-            if(!textStockMin.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textCategoria) != null) {
                 
-                stock_min = Integer.parseInt(textStockMin.getText());
+                categoria = Utilidades.obtenerCadena(textCategoria);
             }
             
-            if(!textStockMax.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockMin) != null) {
                 
-                stock_max = Integer.parseInt(textStockMax.getText());
+                stock_min = Integer.parseInt(Utilidades.obtenerCadena(textStockMin));
             }
             
-            if(!textStockIdeal.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockMax) != null) {
                 
-                stock_ideal = Integer.parseInt(textStockIdeal.getText());
+                stock_max = Integer.parseInt(Utilidades.obtenerCadena(textStockMax));
             }
             
-            if(!textStockReorden.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockIdeal) != null) {
                 
-                stock_reorden = Integer.parseInt(textStockReorden.getText());
+                stock_ideal = Integer.parseInt(Utilidades.obtenerCadena(textStockIdeal));
             }
             
-            if(!textStockMaxPedido.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockReorden) != null) {
                 
-                stock_max_pedido = Integer.parseInt(textStockMaxPedido.getText());
+                stock_reorden = Integer.parseInt(Utilidades.obtenerCadena(textStockReorden));
+            }
+            
+            if(Utilidades.obtenerCadena(textStockMaxPedido) != null) {
+                
+                stock_max_pedido = Integer.parseInt(Utilidades.obtenerCadena(textStockMaxPedido));
             }
             
             Producto producto = new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido);
             LogicaProductos.crud.setProducto(producto);
             LogicaProductos.crud.insertarProducto();
-            Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
-            
+            Utilidades.limpiarCampos(campos, null);
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
@@ -327,12 +361,12 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textId.getText();
-            
-            if(id.isEmpty()) {
+            if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Campo de ID vacío");
             }
+            
+            String id = Utilidades.obtenerCadena(textId);
             
             LogicaProductos.crud.buscarProducto(id);
             cargar();
@@ -347,51 +381,53 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textId.getText();
-            String nombre = textNombre.getText();
-            String categoria = textCategoria.getText();
-            
-            if(id.isEmpty() || nombre.isEmpty() || categoria.isEmpty()) {
+            if(Utilidades.obtenerCadena(textId) == null ||
+               Utilidades.obtenerCadena(textNombre) == null) {
                 
                 throw new Errores.CamposVaciosException();
             }
             
+            String id = Utilidades.obtenerCadena(textId);
+            String nombre = Utilidades.obtenerCadena(textNombre);
+            String categoria = "No definido";
             int stock_min = 0;
             int stock_max = 0;
             int stock_ideal = 0;
             int stock_reorden = 0;
             int stock_max_pedido = 0;
             
-            if(!textStockMin.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textCategoria) != null) {
                 
-                stock_min = Integer.parseInt(textStockMin.getText());
+                categoria = Utilidades.obtenerCadena(textCategoria);
             }
             
-            if(!textStockMax.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockMin) != null) {
                 
-                stock_max = Integer.parseInt(textStockMax.getText());
+                stock_min = Integer.parseInt(Utilidades.obtenerCadena(textStockMin));
             }
             
-            if(!textStockIdeal.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockMax) != null) {
                 
-                stock_ideal = Integer.parseInt(textStockIdeal.getText());
+                stock_max = Integer.parseInt(Utilidades.obtenerCadena(textStockMax));
             }
             
-            if(!textStockReorden.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockIdeal) != null) {
                 
-                stock_reorden = Integer.parseInt(textStockReorden.getText());
+                stock_ideal = Integer.parseInt(Utilidades.obtenerCadena(textStockIdeal));
             }
             
-            if(!textStockMaxPedido.getText().isEmpty()) {
+            if(Utilidades.obtenerCadena(textStockReorden) != null) {
                 
-                stock_max_pedido = Integer.parseInt(textStockMaxPedido.getText());
+                stock_reorden = Integer.parseInt(Utilidades.obtenerCadena(textStockReorden));
+            }
+            
+            if(Utilidades.obtenerCadena(textStockMaxPedido) != null) {
+                
+                stock_max_pedido = Integer.parseInt(Utilidades.obtenerCadena(textStockMaxPedido));
             }
 
             LogicaProductos.crud.actualizarProducto(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
-            
-            Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
-            
+            Utilidades.limpiarCampos(campos, null);
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
@@ -412,17 +448,15 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         
         try {
             
-            String id = textId.getText();
-            
-            if(id.isEmpty()) {
+            if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Campo de ID vacío");
             }
             
-            LogicaProductos.crud.eliminarProducto(id);
-            Utilidades.limpiarCampos(new JTextField[]{
-                textId, textNombre, textCategoria, textStockMin, textStockMax, textStockIdeal, textStockReorden, textStockMaxPedido}, null);
+            String id = Utilidades.obtenerCadena(textId);
             
+            LogicaProductos.crud.eliminarProducto(id);
+            Utilidades.limpiarCampos(campos, null);
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
@@ -432,10 +466,24 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         }
     }
     
-    private void excel() {
+    private void cargarExcel() {
 
         try {
             
+            File excel = new File("src/main/resources/excel/Productos.xlsx");
+            
+            if(excel.exists()) {
+                
+                if(JOptionPane.showConfirmDialog(this, "¿Cargar Excel editado?", "Elija una opción", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                
+                    LogicaProductos.crud.cargarExcel(excel, 0);
+                    JOptionPane.showMessageDialog(this, "Carga de Excel editado exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                    return; 
+                }
+                
+                return;
+            }
+                        
             JFileChooser chooser = new JFileChooser();
             
             if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -450,7 +498,24 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                     
                     if(ext.equals("xlsx")) {
                         
-                        LogicaProductos.crud.cargarExcel(ruta);
+                        JComboBox combo = new JComboBox<>();
+                        combo.addItem("Reemplazar");
+                        combo.addItem("Agregar");
+                        int opcion = 0;
+
+                        if(JOptionPane.showConfirmDialog(this, combo, "Elija una opción", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+
+                            if(combo.getSelectedItem().equals("Agregar")) {
+
+                                opcion = 1;
+                            }
+
+                        } else {
+
+                            return;
+                        }
+                        
+                        LogicaProductos.crud.cargarExcel(new File(ruta), opcion);
                         JOptionPane.showMessageDialog(this, "Carga de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
@@ -463,7 +528,18 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
+    }
+    
+    private void editarExcel() {
+        
+        try {
+            
+            LogicaProductos.crud.editarExcel(new File("src/main/resources/excel/Productos.xlsx"));
+            
+        } catch(Errores.ExcelException ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     private void lista() {
@@ -506,11 +582,13 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         }
     }
     
+    private final JTextField[] campos;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActualizar;
     private javax.swing.JButton buttonBuscar;
+    private javax.swing.JButton buttonCargarExcel;
+    private javax.swing.JButton buttonEditarExcel;
     private javax.swing.JButton buttonEliminar;
-    private javax.swing.JButton buttonExcel;
     private javax.swing.JButton buttonInsertar;
     private javax.swing.JButton buttonLista;
     private javax.swing.JLabel labelCategoria;

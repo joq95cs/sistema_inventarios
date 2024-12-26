@@ -4,7 +4,11 @@ package castellanos.joqsan.sistema_inventarios.logica;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.vista.MarcoFormProductos;
 import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
+import java.awt.Desktop;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.Row;
@@ -41,6 +45,7 @@ public class LogicaProductos {
         
         try {
         
+            Producto.session.clear();
             Producto.session.beginTransaction();
             Producto.session.persist(producto);
             Producto.session.getTransaction().commit();
@@ -60,6 +65,7 @@ public class LogicaProductos {
         
         try {
             
+            Producto.session.clear();
             producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
@@ -77,6 +83,7 @@ public class LogicaProductos {
         
         try {
             
+            //Producto.session.clear();
             Producto.session.beginTransaction();
             
             if(this.producto != null) {
@@ -120,6 +127,7 @@ public class LogicaProductos {
         
         try {
             
+            //Producto.session.clear();
             Producto.session.beginTransaction();
             producto = Producto.session.get(Producto.class, id);
             
@@ -142,34 +150,42 @@ public class LogicaProductos {
         }
     }
     
-    public void cargarExcel(String ruta) throws Errores.ExcelException {
+    public void cargarExcel(File excel, int opcion) throws Errores.ExcelException {
         
         try {
-            
-            Workbook workbook = new XSSFWorkbook(new FileInputStream(ruta));
-            Sheet sheet = workbook.getSheetAt(0);
+                       
+            FileInputStream stream = new FileInputStream(excel);
+            Workbook libro = new XSSFWorkbook(stream);
+            Sheet hoja = libro.getSheetAt(0);
             ArrayList<Producto> registros = new ArrayList<>();
 
-            for(int i=1; i<=sheet.getLastRowNum(); i++) {
+            for(int i=1; i<=hoja.getLastRowNum(); i++) {
 
-                Row row = sheet.getRow(i);
+                Row fila = hoja.getRow(i);
 
-                if(row != null) {
+                if(fila != null) {
 
-                    String id = row.getCell(0).getStringCellValue();
-                    String nombre = row.getCell(1).getStringCellValue();
-                    String categoria = row.getCell(2).getStringCellValue();
-                    int stock_min = (int)row.getCell(3).getNumericCellValue();
-                    int stock_max = (int)row.getCell(4).getNumericCellValue();
-                    int stock_ideal = (int)row.getCell(5).getNumericCellValue();
-                    int stock_reorden = (int)row.getCell(6).getNumericCellValue();
-                    int stock_max_pedido = (int)row.getCell(7).getNumericCellValue();
+                    String id = fila.getCell(0).getStringCellValue();
+                    String nombre = fila.getCell(1).getStringCellValue();
+                    String categoria = fila.getCell(2).getStringCellValue();
+                    int stock_min = (int)fila.getCell(3).getNumericCellValue();
+                    int stock_max = (int)fila.getCell(4).getNumericCellValue();
+                    int stock_ideal = (int)fila.getCell(5).getNumericCellValue();
+                    int stock_reorden = (int)fila.getCell(6).getNumericCellValue();
+                    int stock_max_pedido = (int)fila.getCell(7).getNumericCellValue();
 
                     registros.add(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
                 }
             }
             
+            Producto.session.clear();
             Producto.session.beginTransaction();
+            
+            if(opcion == 0) {
+                
+                String hql = "DELETE FROM Producto";
+                Producto.session.createQuery(hql).executeUpdate();
+            }
 
             for(Producto each : registros) {
                 
@@ -177,12 +193,83 @@ public class LogicaProductos {
             }
             
             Producto.session.getTransaction().commit();
+            libro.close();
+            stream.close();
             
         } catch(Exception ex) {
             
             if(Producto.session.getTransaction() != null) {
                 
                 Producto.session.getTransaction().rollback();
+            }
+            
+            ex.printStackTrace();
+            throw new Errores.ExcelException();
+        }
+    }
+    
+    public void editarExcel(File excel) throws Errores.ExcelException {
+        
+        try {
+            
+            Workbook libro = new XSSFWorkbook();
+            Sheet hoja = libro.createSheet("Productos");
+            String[] campos = {"ID (Clave)", "Nombre", "Categoría", "Stock Mínimo", "Stock Máximo", "Stock Ideal", "Stock Reorden", "Stock Máximo Pedido"};
+            hoja.createRow(0);
+            
+            for(int i=0; i<campos.length; i++) {
+                
+                hoja.getRow(0).createCell(i);
+                hoja.getRow(0).getCell(i).setCellValue(campos[i]);
+            }
+            
+            Producto.session.clear();
+            String hql = "FROM Producto";
+            ArrayList<Producto> consulta = new ArrayList<>(Producto.session.createQuery(hql).list());
+            
+            int x = 1;
+            
+            for(Producto each: consulta) {
+                
+                Row fila = hoja.createRow(x);
+                
+                fila.createCell(0).setCellValue(each.getId());
+                fila.createCell(1).setCellValue(each.getNombre());
+                fila.createCell(2).setCellValue(each.getCategoria());
+                fila.createCell(3).setCellValue(each.getStock_min());
+                fila.createCell(4).setCellValue(each.getStock_max());
+                fila.createCell(5).setCellValue(each.getStock_ideal());
+                fila.createCell(6).setCellValue(each.getStock_reorden());
+                fila.createCell(7).setCellValue(each.getStock_max_pedido());
+                
+                x++;
+            }
+            
+            for(int i=0; i<campos.length; i++) {
+                
+                hoja.autoSizeColumn(i);
+            }
+            
+            FileOutputStream stream = new FileOutputStream(excel);
+            libro.write(stream);
+            libro.close();
+            stream.close();
+            
+            if(excel.exists()) {
+                
+                Desktop.getDesktop().open(excel);
+            }
+                     
+        } catch(Exception ex) {
+            
+            if(Producto.session.getTransaction() != null) {
+                
+                Producto.session.getTransaction().rollback();
+            }
+            
+            if(ex.getClass().equals(FileNotFoundException.class)) {
+                
+                throw new Errores.ExcelException("Archivo abierto");
             }
             
             throw new Errores.ExcelException();
@@ -193,6 +280,7 @@ public class LogicaProductos {
         
         try {
             
+            Producto.session.clear();
             String hql = "FROM Producto";
             ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
             

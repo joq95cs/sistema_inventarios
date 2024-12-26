@@ -54,17 +54,20 @@
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="buttonExcel" alignment="0" max="32767" attributes="0"/>
-                          <Component id="buttonInsertar" alignment="0" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="buttonInsertar" max="32767" attributes="0"/>
+                          <Component id="buttonLista" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="buttonBuscar" max="32767" attributes="0"/>
-                          <Component id="buttonLista" max="32767" attributes="0"/>
+                          <Component id="buttonCargarExcel" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="buttonActualizar" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="buttonEditarExcel" max="32767" attributes="0"/>
+                          <Component id="buttonActualizar" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="buttonEliminar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -126,8 +129,9 @@
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="buttonExcel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonCargarExcel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="buttonLista" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonEditarExcel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -223,12 +227,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEliminarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="buttonExcel">
+    <Component class="javax.swing.JButton" name="buttonCargarExcel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="EXCEL"/>
+        <Property name="text" type="java.lang.String" value="CARGAR"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExcelActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonCargarExcelActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonLista">
@@ -237,6 +241,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonListaActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="buttonEditarExcel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="EDITAR"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEditarExcelActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
