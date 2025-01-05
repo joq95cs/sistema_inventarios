@@ -4,11 +4,8 @@ package castellanos.joqsan.sistema_inventarios.vista;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
-import java.awt.Desktop;
 import java.awt.HeadlessException;
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -566,20 +563,6 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         textStockIdeal.setText(LogicaProductos.crud.getProducto().getStock_ideal() + "");
         textStockReorden.setText(LogicaProductos.crud.getProducto().getStock_reorden() + "");
         textStockMaxPedido.setText(LogicaProductos.crud.getProducto().getStock_max_pedido() + "");
-    }
-    
-    public static void main(String args[]) {
-        
-        try {
-            
-            Utilidades.setLookAndFeel();
-            MarcoFormProductos.m = new MarcoFormProductos(false);
-            Utilidades.ejecutarMarco(MarcoFormProductos.m);
-            
-        } catch(Errores.ConexionException | Errores.LookAndFeelException ex) {
-            
-            ex.printStackTrace();
-        }
     }
     
     private final JTextField[] campos;

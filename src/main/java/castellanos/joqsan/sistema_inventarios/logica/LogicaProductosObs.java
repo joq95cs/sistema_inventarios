@@ -1,6 +1,5 @@
 package castellanos.joqsan.sistema_inventarios.logica;
 
-import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.orm.ProductoObservacion;
 import java.util.ArrayList;
 import org.hibernate.query.Query;

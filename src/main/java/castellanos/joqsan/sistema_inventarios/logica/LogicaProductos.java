@@ -11,6 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -212,24 +215,35 @@ public class LogicaProductos {
         
         try {
             
+            //Se definen los encabezados de las columnas
             Workbook libro = new XSSFWorkbook();
             Sheet hoja = libro.createSheet("Productos");
             String[] campos = {"ID (Clave)", "Nombre", "Categoría", "Stock Mínimo", "Stock Máximo", "Stock Ideal", "Stock Reorden", "Stock Máximo Pedido"};
-            hoja.createRow(0);
+            hoja.createRow(0); //Fila de encabezados
+            
+            //Estilo y fuente para encabezados
+            CellStyle e1 = libro.createCellStyle();
+            e1.setAlignment(HorizontalAlignment.CENTER);
+            Font f1 = libro.createFont();
+            f1.setFontName("Arial");
+            f1.setFontHeightInPoints(Short.parseShort("10"));
+            f1.setBold(true);
+            e1.setFont(f1);
             
             for(int i=0; i<campos.length; i++) {
                 
                 hoja.getRow(0).createCell(i);
                 hoja.getRow(0).getCell(i).setCellValue(campos[i]);
+                hoja.getRow(0).getCell(i).setCellStyle(e1); //Se fija el primer estilo
             }
             
-            Producto.session.clear();
+            //Se consulta la base de datos para escribir los registros
             String hql = "FROM Producto";
             ArrayList<Producto> consulta = new ArrayList<>(Producto.session.createQuery(hql).list());
             
-            int x = 1;
+            int x = 1; //Empieza por 1 porque 0 es la fila de encabezados
             
-            for(Producto each: consulta) {
+            for(Producto each: consulta) { //Por cada registro se crea una fila
                 
                 Row fila = hoja.createRow(x);
                 
@@ -242,12 +256,38 @@ public class LogicaProductos {
                 fila.createCell(6).setCellValue(each.getStock_reorden());
                 fila.createCell(7).setCellValue(each.getStock_max_pedido());
                 
-                x++;
+                x++; //Se aumenta el contador despues de agregar cada registro
             }
             
+            //Estilo y fuente para registros
+            CellStyle e2 = libro.createCellStyle();
+            e2.setAlignment(HorizontalAlignment.CENTER);
+            Font f2 = libro.createFont();
+            f2.setFontName("Arial");
+            f2.setFontHeightInPoints(Short.parseShort("10"));
+            f2.setBold(false);
+            e2.setFont(f2);
+            
+            for(int i=1; i<=consulta.size(); i++) {
+                
+                Row fila = hoja.getRow(i);
+                
+                for(int j=0; j<=7; j++) {
+                    
+                    fila.getCell(j).setCellStyle(e2);
+                }
+            }
+            
+            //Fijar el tamagno de las columnas
             for(int i=0; i<campos.length; i++) {
                 
-                hoja.autoSizeColumn(i);
+                if(campos[i].equals("Nombre")) {
+                    
+                    hoja.autoSizeColumn(i);
+                    break;
+                }
+                
+                hoja.setColumnWidth(i, 20*256); //Para 20 caracteres
             }
             
             FileOutputStream stream = new FileOutputStream(excel);
@@ -260,7 +300,7 @@ public class LogicaProductos {
                 Desktop.getDesktop().open(excel);
             }
                      
-        } catch(Exception ex) {
+        } catch(Exception ex) { //Se queda la clase base para manejar todo tipo de errores
             
             if(Producto.session.getTransaction() != null) {
                 

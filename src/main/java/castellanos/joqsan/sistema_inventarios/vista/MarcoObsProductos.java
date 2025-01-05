@@ -276,20 +276,6 @@ public class MarcoObsProductos extends javax.swing.JFrame {
         areaObs.setText(LogicaProductosObs.crud.getPobs().getObservaciones());
     }
     
-    public static void main(String[] args) {
-        
-        try {
-            
-            Utilidades.setLookAndFeel();
-            MarcoObsProductos.m = new MarcoObsProductos();
-            Utilidades.ejecutarMarco(MarcoObsProductos.m);
-            
-        } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
-            
-            ex.printStackTrace();
-        }
-        
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaObs;
     private javax.swing.JButton buttonActualizar;

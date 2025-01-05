@@ -13,10 +13,12 @@ castellanos\joqsan\sistema_inventarios\vista\MarcoLogin.class
 castellanos\joqsan\sistema_inventarios\orm\Usuario.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$7.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel$2.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$5.class
 castellanos\joqsan\sistema_inventarios\orm\Producto.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome$1.class
 castellanos\joqsan\sistema_inventarios\orm\Almacen.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel$5.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$LookAndFeelException.class
 castellanos\joqsan\sistema_inventarios\orm\UsuarioContacto.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos$4.class
@@ -36,12 +38,15 @@ castellanos\joqsan\sistema_inventarios\orm\Salida.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$ActualizacionException.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$ConexionException.class
 castellanos\joqsan\sistema_inventarios\orm\PedidoObservacion.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel.class
 castellanos\joqsan\sistema_inventarios\Main.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel$1.class
 castellanos\joqsan\sistema_inventarios\logica\LogicaProductos.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$2.class
 castellanos\joqsan\sistema_inventarios\logica\LogicaLogin.class
 castellanos\joqsan\sistema_inventarios\orm\Costos.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoObsProductos$3.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel$4.class
 castellanos\joqsan\sistema_inventarios\orm\ProveedorObservacion.class
 castellanos\joqsan\sistema_inventarios\vista\Utilidades.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos$3.class
@@ -60,6 +65,7 @@ castellanos\joqsan\sistema_inventarios\orm\ProductoStock.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos$1.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$CargarException.class
 castellanos\joqsan\sistema_inventarios\logica\LogicaProductosObs.class
+castellanos\joqsan\sistema_inventarios\vista\MarcoPanel$3.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoHome$2.class
 castellanos\joqsan\sistema_inventarios\vista\MarcoLogin$3.class
 castellanos\joqsan\sistema_inventarios\logica\Errores$CamposVaciosException.class

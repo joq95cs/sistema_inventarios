@@ -206,20 +206,6 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         });
     }   
     
-    public static void main(String args[]) {
-            
-        try {
-                
-            Utilidades.setLookAndFeel();
-            MarcoListaProductos.m = new MarcoListaProductos();
-            Utilidades.ejecutarMarco(MarcoListaProductos.m);
-                
-        } catch (Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
-                
-            ex.printStackTrace();
-        }
-    }
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActualizar;
     private javax.swing.JButton buttonEliminar;

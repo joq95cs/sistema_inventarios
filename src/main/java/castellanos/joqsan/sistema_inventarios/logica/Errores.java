@@ -1,6 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.logica;
 
+//Todos las clases imprimen la pila de errores
 public class Errores {
     
     public static class LoginException extends Exception {
@@ -8,11 +9,13 @@ public class Errores {
         public LoginException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public LoginException() {
         
             super("Error de login");
+            printStackTrace();
         }
     }
     
@@ -21,11 +24,13 @@ public class Errores {
         public CamposVaciosException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public CamposVaciosException() {
             
             super("Error de campos vacíos");
+            printStackTrace();
         }
     }
     
@@ -34,11 +39,13 @@ public class Errores {
         public ConexionException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public ConexionException() {
             
             super("Error de conexión a la base de datos");
+            printStackTrace();
         }
     }
     
@@ -47,11 +54,13 @@ public class Errores {
         public InsercionException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public InsercionException() {
             
             super("Error de inserción");
+            printStackTrace();
         }
     }
     
@@ -60,11 +69,13 @@ public class Errores {
         public BusquedaException(String m) {
             
             super(m);
+            printStackTrace();
         }
 
         public BusquedaException() {
             
             super("Error de búsqueda");
+            printStackTrace();
         }
     }
 
@@ -73,11 +84,13 @@ public class Errores {
         public ActualizacionException(String m) {
             
             super(m);
+            printStackTrace();
         }
 
         public ActualizacionException() {
             
             super("Error de actualización");
+            printStackTrace();
         }
     }
 
@@ -86,11 +99,13 @@ public class Errores {
         public EliminacionException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public EliminacionException() {
             
             super("Error de eliminación");
+            printStackTrace();
         }
     }
     
@@ -99,11 +114,13 @@ public class Errores {
         public ExcelException(String m) {
             
             super(m);
+            printStackTrace();
         }
 
         public ExcelException() {
             
             super("Error de Excel");
+            printStackTrace();
         }
     }
     
@@ -112,11 +129,13 @@ public class Errores {
         public ListaException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public ListaException() {
             
             super("Error de lista");
+            printStackTrace();
         }
     }
     
@@ -125,11 +144,13 @@ public class Errores {
         public LookAndFeelException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public LookAndFeelException() {
             
             super("Error de Look And Feel");
+            printStackTrace();
         }
     }
     
@@ -138,11 +159,13 @@ public class Errores {
         public CargarException(String m) {
             
             super(m);
+            printStackTrace();
         }
         
         public CargarException() {
             
             super("Error al cargar registro");
+            printStackTrace();
         }
     }
 }
