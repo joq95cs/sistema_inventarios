@@ -16,17 +16,21 @@ import org.hibernate.cfg.Configuration;
 @Table(name = "usuarios")
 public class Usuario {
     
+    //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
+        
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Usuario.class).buildSessionFactory().openSession();
+        } catch(ClassNotFoundException | HibernateException ex) {
             
-        } catch(HibernateException ex) {
-            
-            throw new Errores.ConexionException();
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -34,6 +38,25 @@ public class Usuario {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
     }
     
     public Usuario() {

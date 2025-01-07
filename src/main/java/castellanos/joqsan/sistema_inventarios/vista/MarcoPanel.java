@@ -2,6 +2,7 @@
 package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import javax.swing.JOptionPane;
 
 public class MarcoPanel extends javax.swing.JFrame {
     
@@ -103,7 +104,7 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoLogin.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch(Exception ex) {
             
             ex.printStackTrace();
         }
@@ -117,8 +118,9 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoFormProductos.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch(Errores.ConexionException ex) {
             
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }//GEN-LAST:event_buttonM2ActionPerformed
@@ -131,7 +133,7 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
+        } catch(Exception ex) {
             
             ex.printStackTrace();
         }
@@ -145,7 +147,7 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoObsProductos.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.ConexionException ex) {
+        } catch(Exception ex) {
             
             ex.printStackTrace();
         }

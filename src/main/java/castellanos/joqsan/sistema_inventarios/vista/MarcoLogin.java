@@ -6,14 +6,13 @@ import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
 import castellanos.joqsan.sistema_inventarios.orm.Usuario;
 import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
-import java.security.NoSuchAlgorithmException;
 import javax.swing.JOptionPane;
 
 public class MarcoLogin extends javax.swing.JFrame {
     
     public static MarcoLogin m = null;
 
-    public MarcoLogin() throws Errores.LookAndFeelException, Errores.ConexionException {
+    public MarcoLogin() {
         
         initComponents();
         Utilidades.centrarMarco(this);
@@ -130,9 +129,7 @@ public class MarcoLogin extends javax.swing.JFrame {
                 
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso", "Correcto", JOptionPane.INFORMATION_MESSAGE);
                 Utilidades.cerrarMarco(this);
-                
                 MarcoHome.m = new MarcoHome();
-                Utilidades.centrarMarco(MarcoHome.m);
                 Utilidades.ejecutarMarco(MarcoHome.m);
                 
             } else {
@@ -140,9 +137,9 @@ public class MarcoLogin extends javax.swing.JFrame {
                 throw new Errores.LoginException("Usuario o contraseña incorrectos");
             }
             
-        } catch (Errores.CamposVaciosException | Errores.ConexionException | Errores.LoginException | Errores.LookAndFeelException | HeadlessException | NoSuchAlgorithmException ex) {
+        } catch (Errores.CamposVaciosException | Errores.ConexionException | Errores.LoginException | Errores.LookAndFeelException | Errores.UsuarioValidoException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(MarcoLogin.m, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             
         } finally {
             

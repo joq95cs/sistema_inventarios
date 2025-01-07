@@ -16,17 +16,21 @@ import org.hibernate.cfg.Configuration;
 @Table(name = "usuarios_contactos")
 public class UsuarioContacto {
     
+    //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(UsuarioContacto.class).buildSessionFactory().openSession();
-        
-        } catch(HibernateException ex) {
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            throw new Errores.ConexionException();
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -34,10 +38,30 @@ public class UsuarioContacto {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
     }
     
     public UsuarioContacto() {
     
+        this.id = 0;
         this.id_usuario = 0;
         this.tipo_contacto = null;
         this.contacto = null;
@@ -45,6 +69,7 @@ public class UsuarioContacto {
 
     public UsuarioContacto(int id_usuario, String tipo_contacto, String contacto) {
         
+        this.id = 0;
         this.id_usuario = id_usuario;
         this.tipo_contacto = tipo_contacto;
         this.contacto = contacto;
@@ -100,10 +125,9 @@ public class UsuarioContacto {
 
     @Override
     public String toString() {
-        
         return "UsuarioContacto{" + "id=" + id + ", id_usuario=" + id_usuario + ", tipo_contacto=" + tipo_contacto + ", contacto=" + contacto + '}';
     }
-
+    
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

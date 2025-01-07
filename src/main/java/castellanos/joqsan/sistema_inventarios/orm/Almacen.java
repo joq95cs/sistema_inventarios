@@ -1,21 +1,73 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 @Entity
 @Table(name = "almacenes")
 public class Almacen {
     
-    public Almacen() {}
+    //Codigo de configuraciones
+    public static Session session = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+        
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    public Almacen() {
+    
+        this.id = 0;
+        this.almacen = null;
+        this.id_producto_stock = 0;
+        this.costo_promedio = 0;
+        this.costo_total = 0;
+    }
 
     public Almacen(String almacen, int id_producto_stock, double costo_promedio, double costo_total) {
         
+        this.id = 0;
         this.almacen = almacen;
         this.id_producto_stock = id_producto_stock;
         this.costo_promedio = costo_promedio;

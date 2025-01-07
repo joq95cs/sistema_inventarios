@@ -70,7 +70,7 @@ public class MarcoHome extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoFormProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch (Errores.ConexionException | Errores.LookAndFeelException ex) {
+        } catch (Exception ex) {
         
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -84,7 +84,7 @@ public class MarcoHome extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch (Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
+        } catch (Errores.CargarListaException | Errores.ConexionException ex) {
         
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

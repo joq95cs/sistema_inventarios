@@ -31,7 +31,7 @@ public class Salida {
         
         } catch(HibernateException ex) {
             
-            throw new Errores.ConexionException();
+            throw new Errores.ConexionException("Error de inicio de entidad Salida");
         }
     }
     

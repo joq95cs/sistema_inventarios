@@ -53,23 +53,31 @@
                           <Component id="textStockMaxPedido" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="buttonInsertar" max="32767" attributes="0"/>
-                          <Component id="buttonLista" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="buttonInsertar" max="32767" attributes="0"/>
+                                  <Component id="buttonLista" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="buttonBuscar" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="buttonActualizar" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="buttonEliminar" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="buttonCargarExcel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="buttonExportarExcel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Component id="buttonArchivosExcel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="buttonBuscar" max="32767" attributes="0"/>
-                          <Component id="buttonCargarExcel" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="buttonEditarExcel" max="32767" attributes="0"/>
-                          <Component id="buttonActualizar" max="32767" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="buttonEliminar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -131,8 +139,10 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="buttonCargarExcel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="buttonLista" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="buttonEditarExcel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonExportarExcel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="buttonArchivosExcel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -229,7 +239,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonCargarExcel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="CARGAR"/>
+        <Property name="text" type="java.lang.String" value="CARGAR EXCEL"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonCargarExcelActionPerformed"/>
@@ -243,12 +253,20 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonListaActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="buttonEditarExcel">
+    <Component class="javax.swing.JButton" name="buttonExportarExcel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="EDITAR"/>
+        <Property name="text" type="java.lang.String" value="EXPORTAR EXCEL"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEditarExcelActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExportarExcelActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="buttonArchivosExcel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="ARCHIVOS EXCEL"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonArchivosExcelActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

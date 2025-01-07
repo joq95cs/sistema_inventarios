@@ -1,6 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.logica;
 
+import castellanos.joqsan.sistema_inventarios.orm.ArchivoExcel;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.vista.MarcoFormProductos;
 import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
@@ -9,6 +10,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -44,49 +48,50 @@ public class LogicaProductos {
         this.producto = producto;
     }
     
-    public void insertarProducto() throws Errores.InsercionException {
+    public void insertarProducto() throws Errores.InsertarProductoException {
         
         try {
         
-            Producto.session.clear();
+            Producto.limpiar(); //Se limpia la sesion porque iniciamos desde cero
             Producto.session.beginTransaction();
             Producto.session.persist(producto);
-            Producto.session.getTransaction().commit();
+            Producto.commit();
         
         } catch(Exception ex) {
             
-            if(Producto.session.getTransaction() != null) {
-                
-                Producto.session.getTransaction().rollback();
-            }
-            
-            throw new Errores.InsercionException();
+            Producto.rollback();
+            throw new Errores.InsertarProductoException("Error de inserción");
         } 
     }
 
-    public void buscarProducto(String id) throws Errores.BusquedaException {
+    public void buscarProducto(String id) throws Errores.BuscarProductoException {
         
         try {
             
-            Producto.session.clear();
+            Producto.limpiar(); //Se limpia la sesion porque iniciamos desde cero
             producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
-                throw new Exception("Registro no encontrado");
+                throw new Exception();
             }
             
         } catch(Exception ex) {
             
-            throw new Errores.BusquedaException(ex.getMessage());
+            if(ex.getClass().equals(Exception.class)) {
+                
+                throw new Errores.BuscarProductoException("Registro no encontrado");
+            }
+            
+            throw new Errores.BuscarProductoException("Error de búsqueda");
         }
     }
     
-    public void actualizarProducto(Producto producto) throws Errores.ActualizacionException {
+    public void actualizarProducto(Producto producto) throws Errores.ActualizarProductoException {
         
         try {
             
-            //Producto.session.clear();
+            //No se limpia la sesion porque se pueden usar datos buscados
             Producto.session.beginTransaction();
             
             if(this.producto != null) {
@@ -113,47 +118,44 @@ public class LogicaProductos {
             this.producto.setStock_ideal(producto.getStock_ideal());
             this.producto.setStock_reorden(producto.getStock_reorden());
             this.producto.setStock_max_pedido(producto.getStock_max_pedido());
-            Producto.session.getTransaction().commit();
+            Producto.commit();
             
         } catch(Exception ex) {
             
-            if(Producto.session.getTransaction() != null) {
-                
-                Producto.session.getTransaction().rollback();
-            }
-            
-            throw new Errores.ActualizacionException();
+            Producto.rollback();
+            throw new Errores.ActualizarProductoException("Error de actualización");
         }
     }
     
-    public void eliminarProducto(String id) throws Errores.EliminacionException {
+    public void eliminarProducto(String id) throws Errores.EliminarProductoException {
         
         try {
             
-            //Producto.session.clear();
+            //No se limpia la sesion porque se pueden usar datos buscados
             Producto.session.beginTransaction();
             producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
-                throw new Exception("Registro no encontrado");
+                throw new Exception();
             }
             
             Producto.session.remove(producto);
-            Producto.session.getTransaction().commit();
+            Producto.commit();
             
         } catch(Exception ex) {
             
-            if(Producto.session.getTransaction() != null) {
+            if(ex.getClass().equals(Exception.class)) {
                 
-                Producto.session.getTransaction().rollback();
+                throw new Errores.EliminarProductoException("Registro no encontrado");
             }
             
-            throw new Errores.EliminacionException(ex.getMessage());
+            Producto.rollback();
+            throw new Errores.EliminarProductoException("Error de eliminación");
         }
     }
     
-    public void cargarExcel(File excel, int opcion) throws Errores.ExcelException {
+    public void cargarExcel(File excel, int opcion) throws Errores.CargarExcelException {
         
         try {
                        
@@ -181,7 +183,7 @@ public class LogicaProductos {
                 }
             }
             
-            Producto.session.clear();
+            Producto.limpiar();
             Producto.session.beginTransaction();
             
             if(opcion == 0) {
@@ -195,23 +197,18 @@ public class LogicaProductos {
                 Producto.session.persist(each);
             }
             
-            Producto.session.getTransaction().commit();
+            Producto.commit();
             libro.close();
             stream.close();
             
         } catch(Exception ex) {
             
-            if(Producto.session.getTransaction() != null) {
-                
-                Producto.session.getTransaction().rollback();
-            }
-            
-            ex.printStackTrace();
-            throw new Errores.ExcelException();
+            Producto.rollback();
+            throw new Errores.CargarExcelException("Error de carga de Excel");
         }
     }
     
-    public void editarExcel(File excel) throws Errores.ExcelException {
+    public void exportarExcel(File excel, String tabla) throws Errores.ExportarExcelException {
         
         try {
             
@@ -281,13 +278,16 @@ public class LogicaProductos {
             //Fijar el tamagno de las columnas
             for(int i=0; i<campos.length; i++) {
                 
-                if(campos[i].equals("Nombre")) {
+                /*if(campos[i].equals("Nombre")) {
                     
                     hoja.autoSizeColumn(i);
-                    break;
-                }
+                    
+                } else {
+                    
+                   hoja.setColumnWidth(i, 20*256); //Para 20 caracteres 
+                }*/
                 
-                hoja.setColumnWidth(i, 20*256); //Para 20 caracteres
+                hoja.setColumnWidth(i, 20*256);
             }
             
             FileOutputStream stream = new FileOutputStream(excel);
@@ -297,30 +297,61 @@ public class LogicaProductos {
             
             if(excel.exists()) {
                 
+                ArchivoExcel.iniciar();
+                ArchivoExcel.session.beginTransaction();
+                
+                hql = "DELETE FROM ArchivoExcel excel WHERE excel.nombre = :nombre";
+                Query query = ArchivoExcel.session.createQuery(hql);
+                query.setParameter("nombre", excel.getName());
+                query.executeUpdate();
+                
+                ArchivoExcel.session.persist(new ArchivoExcel(excel.getName(), tabla));
+                ArchivoExcel.commit();
+                ArchivoExcel.cerrar();
+                
                 Desktop.getDesktop().open(excel);
             }
                      
-        } catch(Exception ex) { //Se queda la clase base para manejar todo tipo de errores
+        } catch(Exception ex) { //Se queda la clase base para manejar todo tipo de errores            
             
-            if(Producto.session.getTransaction() != null) {
-                
-                Producto.session.getTransaction().rollback();
-            }
-            
-            if(ex.getClass().equals(FileNotFoundException.class)) {
-                
-                throw new Errores.ExcelException("Archivo abierto");
-            }
-            
-            throw new Errores.ExcelException();
+            ArchivoExcel.rollback();
+            throw new Errores.ExportarExcelException("Error de exportación de Excel");
         }
     }
     
-    public void cargarLista(DefaultTableModel modelo) throws Errores.ListaException {
+    public void cargarArchivosExcel(DefaultTableModel modelo) throws Errores.CargarArchivosExcelException {
         
         try {
             
-            Producto.session.clear();
+            ArchivoExcel.iniciar(); //Se debe conectar la entidad, no es necesario limpiar porque se esta iniciando
+            
+            //Se hace la consulta a la tabla y se guardan los resultados en el array
+            String hql = "FROM ArchivoExcel";
+            ArrayList<ArchivoExcel> archivos = new ArrayList<>(ArchivoExcel.session.createQuery(hql).list()); 
+            
+            for(ArchivoExcel each: archivos) {
+                
+                Object[] fila = {
+                
+                    each.getNombre(),
+                    each.getTabla(),
+                    each.getFecha_hora()
+                };
+                
+                modelo.addRow(fila);
+            }
+            
+        } catch(Exception ex) {
+            
+            throw new Errores.CargarArchivosExcelException("Error de carga de archivos Excel");
+        }
+    }
+    
+    public void cargarLista(DefaultTableModel modelo) throws Errores.CargarListaException {
+        
+        try {
+            
+            Producto.limpiar();
             String hql = "FROM Producto";
             ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
             
@@ -343,11 +374,11 @@ public class LogicaProductos {
             
         } catch(Exception ex) {
             
-            throw new Errores.ListaException();
+            throw new Errores.CargarListaException("Error de carga de lista");
         }
     }
     
-    public void cargarProducto(String id) throws Errores.CargarException {
+    public void cargarProducto(String id) throws Errores.CargarProductoException {
         
         try {
             
@@ -355,7 +386,7 @@ public class LogicaProductos {
             
             if(producto == null) {
                 
-                throw new Exception("Registro no encontrado");
+                throw new Exception();
             }
             
             MarcoFormProductos.m = new MarcoFormProductos(true);
@@ -363,7 +394,59 @@ public class LogicaProductos {
             
         } catch(Exception ex) {
             
-            throw new Errores.CargarException();
+            if(ex.getClass().equals(Exception.class)) {
+                
+                throw new Errores.CargarProductoException("Registro no encontrado"); 
+            }
+            
+            throw new Errores.CargarProductoException("Error de carga de producto");
+        }
+    }
+    
+    public void eliminarExcel(File excel) throws Errores.EliminarExcelException {
+        
+        try {
+            
+            //Primero se elimina el archivo 
+            excel.delete();
+            
+            //Despues se elimina el registro de la tabla
+            ArchivoExcel.iniciar();
+            ArchivoExcel.session.beginTransaction();
+            String hql = "DELETE FROM ArchivoExcel excel WHERE excel.nombre = :nombre";
+            Query query = ArchivoExcel.session.createQuery(hql);
+            query.setParameter("nombre", excel.getName());
+            query.executeUpdate();
+            ArchivoExcel.commit();
+            ArchivoExcel.cerrar();
+            
+        } catch(Exception ex) {
+            
+            ArchivoExcel.rollback();
+            throw new Errores.EliminarExcelException("Error de eliminación de Excel");
+        }
+    }
+    
+    public void agregarExcel(Path origen, Path destino, String tabla) throws Errores.AgregarExcelException {
+        
+        try {
+            
+            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+            
+            ArchivoExcel.iniciar();
+            ArchivoExcel.session.beginTransaction();
+            ArchivoExcel.session.persist(new ArchivoExcel(
+            
+                new File(destino.toString()).getName(),
+                tabla
+            ));
+            
+            ArchivoExcel.commit();
+            ArchivoExcel.cerrar();
+            
+        } catch(Exception ex) {
+            
+            throw new Errores.AgregarExcelException("Error de copiado de Excel");
         }
     }
     

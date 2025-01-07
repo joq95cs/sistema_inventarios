@@ -29,29 +29,27 @@ public class LogicaProductosObs {
         this.pobs = pobs;
     }
     
-    public void insertarObservacion() throws Errores.InsercionException {
+    public void insertarObservacion() throws Errores.InsertarPobsException  {
         
         try {
             
+            ProductoObservacion.limpiar();
             ProductoObservacion.session.beginTransaction();
             ProductoObservacion.session.persist(pobs);
-            ProductoObservacion.session.getTransaction().commit();
+            ProductoObservacion.commit();
             
         } catch(Exception ex) {
             
-            if(ProductoObservacion.session.getTransaction() != null) {
-                
-                ProductoObservacion.session.getTransaction().rollback();
-            }
-            
-            throw new Errores.InsercionException();
+            ProductoObservacion.rollback();
+            throw new Errores.InsertarPobsException("Error de insercion");
         }
     }
     
-    public void buscarObservacion(String id_producto) throws Errores.BusquedaException {
+    public void buscarObservacion(String id_producto) throws Errores.BuscarPobsException {
         
         try {
             
+            ProductoObservacion.limpiar();
             String hql = "FROM ProductoObservacion WHERE id_producto = :idProducto";
             Query query = ProductoObservacion.session.createQuery(hql);
             query.setParameter("idProducto", id_producto);
@@ -59,23 +57,27 @@ public class LogicaProductosObs {
             
             if(consulta.isEmpty()) {
                 
-                throw new Exception("Registro no encontrado");
+                throw new Exception();
             }
             
             pobs = consulta.get(0);
             
         } catch(Exception ex) {
             
-            throw new Errores.BusquedaException(ex.getMessage());
+            if(ex.getClass().equals(Exception.class)) {
+                
+                throw new Errores.BuscarPobsException("Registro no encontrado");
+            }
+            
+            throw new Errores.BuscarPobsException("Error de búsqueda");
         }
     }
     
-    public void eliminarObservacion(String id_producto) throws Errores.EliminacionException {
+    public void eliminarObservacion(String id_producto) throws Errores.EliminarPobsException {
         
         try {
             
             ProductoObservacion.session.beginTransaction();
-            
             String hql = "FROM ProductoObservacion WHERE id_producto = :idProducto";
             Query query = ProductoObservacion.session.createQuery(hql);
             query.setParameter("idProducto", id_producto);
@@ -83,25 +85,26 @@ public class LogicaProductosObs {
             
             if(consulta.isEmpty()) {
                 
-                throw new Exception("Registro no encontrado");
+                throw new Exception();
             }
             
             pobs = consulta.get(0);
             ProductoObservacion.session.remove(pobs);
-            ProductoObservacion.session.getTransaction().commit();
+            ProductoObservacion.commit();
             
         } catch(Exception ex) {
             
-            if(ProductoObservacion.session.getTransaction() != null) {
+            if(ex.getClass().equals(Exception.class)) {
                 
-                ProductoObservacion.session.getTransaction().rollback();
+                throw new Errores.EliminarPobsException("Registro no encontrado");
             }
             
-            throw new Errores.EliminacionException(ex.getMessage());
+            ProductoObservacion.rollback();
+            throw new Errores.EliminarPobsException("Error de eliminación");
         }
     }
     
-    public void actualizarObservacion(ProductoObservacion pobs) throws Errores.ActualizacionException {
+    public void actualizarObservacion(ProductoObservacion pobs) throws Errores.ActualizarPobsException  {
         
         try {
             
@@ -132,16 +135,12 @@ public class LogicaProductosObs {
             
             this.pobs.setId_producto(pobs.getId_producto());
             this.pobs.setObservaciones(pobs.getObservaciones());
-            ProductoObservacion.session.getTransaction().commit();
+            ProductoObservacion.commit();
             
         } catch(Exception ex) {
             
-            if(ProductoObservacion.session.getTransaction() != null) {
-                
-                ProductoObservacion.session.getTransaction().rollback();
-            }
-            
-            throw new Errores.ActualizacionException(ex.getMessage());
+            ProductoObservacion.rollback();
+            throw new Errores.ActualizarPobsException("Error de actualización");
         }
     }
     

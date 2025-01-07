@@ -20,19 +20,26 @@ public class LogicaLogin {
         this.password = password;
     }
     
-    public boolean usuarioValido() throws NoSuchAlgorithmException {
+    public boolean usuarioValido() throws Errores.UsuarioValidoException {
         
-        String hql = "FROM Usuario u1 WHERE u1.username = :user AND u1.password = :pass";   
-        Query query = Usuario.session.createQuery(hql);
-        query.setParameter("user", username);
-        query.setParameter("pass", getSHA_256());
-        ArrayList<Usuario> consulta = new ArrayList<>(query.list());
+        try {
             
-        return !consulta.isEmpty();
+            String hql = "FROM Usuario u1 WHERE u1.username = :user AND u1.password = :pass";   
+            Query query = Usuario.session.createQuery(hql);
+            query.setParameter("user", username);
+            query.setParameter("pass", getSHA_256());
+            ArrayList<Usuario> consulta = new ArrayList<>(query.list());
+
+            return !consulta.isEmpty();
+            
+        } catch(Exception ex) {
+            
+            throw new Errores.UsuarioValidoException("Error de usuario válido");
+        }
     }
     
     private String getSHA_256() throws NoSuchAlgorithmException {
-        
+                
         byte[] bytes = MessageDigest.getInstance("SHA-256").digest(password.getBytes());
         StringBuilder sha256 = new StringBuilder();
         

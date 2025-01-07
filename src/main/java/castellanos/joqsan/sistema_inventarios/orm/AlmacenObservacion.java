@@ -20,17 +20,19 @@ import org.hibernate.cfg.Configuration;
 @Table(name = "almacenes_observaciones")
 public class AlmacenObservacion {
     
+    //Codigo de configuraciones
     public static Session session = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(AlmacenObservacion.class).buildSessionFactory().openSession();
+            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
         
-        } catch(HibernateException ex) {
+        } catch(ClassNotFoundException | HibernateException ex) {
             
-            throw new Errores.ConexionException();
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -38,6 +40,24 @@ public class AlmacenObservacion {
         
         session.getSessionFactory().close();
         session.close();
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
     }
     
     public AlmacenObservacion() {

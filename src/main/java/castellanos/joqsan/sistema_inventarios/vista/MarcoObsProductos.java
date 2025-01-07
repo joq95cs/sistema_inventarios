@@ -217,7 +217,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             LogicaProductosObs.crud.buscarObservacion(id_producto);
             cargar();
             
-        } catch(Errores.BusquedaException | Errores.CamposVaciosException ex) {
+        } catch(Errores.BuscarPobsException | Errores.CamposVaciosException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -241,7 +241,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             LogicaProductosObs.crud.setPobs(null);
             JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch(Errores.ActualizacionException | Errores.CamposVaciosException | HeadlessException ex) {
+        } catch(Errores.ActualizarPobsException | Errores.CamposVaciosException | HeadlessException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

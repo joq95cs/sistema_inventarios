@@ -3,6 +3,7 @@ package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,7 +16,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
     
     public static MarcoListaProductos m = null;
 
-    public MarcoListaProductos() throws Errores.ConexionException, Errores.LookAndFeelException, Errores.ListaException {
+    public MarcoListaProductos() throws Errores.ConexionException, Errores.CargarListaException {
         
         initComponents();
         Utilidades.centrarMarco(this);
@@ -42,6 +43,11 @@ public class MarcoListaProductos extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Lista de Productos");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         labelID.setText("ID (Clave)");
 
@@ -60,7 +66,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
 
         textID.setColumns(10);
 
-        buttonActualizar.setText("EDITAR");
+        buttonActualizar.setText("ACTUALIZAR");
         buttonActualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonActualizarActionPerformed(evt);
@@ -113,15 +119,26 @@ public class MarcoListaProductos extends javax.swing.JFrame {
 
     private void buttonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActualizarActionPerformed
         
-        editar(Utilidades.obtenerCadena(textID));
+        actualizar(Utilidades.obtenerCadena(textID));
     }//GEN-LAST:event_buttonActualizarActionPerformed
 
     private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
-       
+
         eliminar();
     }//GEN-LAST:event_buttonEliminarActionPerformed
 
-    private void editar(String id) {
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+
+        if(Producto.session != null) {
+                
+            Producto.cerrar();
+            System.out.println("---Entidad Producto cerrada---");
+        }
+        
+        Utilidades.cerrarMarco(this);
+    }//GEN-LAST:event_formWindowClosing
+
+    private void actualizar(String id) {
         
         try {
             
@@ -133,7 +150,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             LogicaProductos.crud.cargarProducto(id);
             Utilidades.cerrarMarco(this);
         
-        } catch(Errores.CamposVaciosException | Errores.CargarException ex) {
+        } catch(Errores.CamposVaciosException | Errores.CargarProductoException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -152,13 +169,13 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             cargar();
             
-        } catch(Errores.CamposVaciosException | Errores.EliminacionException | Errores.ListaException | HeadlessException ex) {
+        } catch(Errores.CamposVaciosException | Errores.CargarListaException | Errores.EliminarProductoException | HeadlessException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
-    private void cargar() throws Errores.ListaException {
+    private void cargar() throws Errores.CargarListaException {
         
         DefaultTableModel modelo = new DefaultTableModel() {
         
@@ -180,8 +197,10 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         tableProductos.setModel(modelo);
         tableProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
+        //Se llama al metodo encargado de consultar la table y modificar el modelo
         LogicaProductos.crud.cargarLista(modelo);
         
+        //Se agrega el evento para que se escriba el id al seleccionar la fila
         tableProductos.getSelectionModel().addListSelectionListener((ListSelectionEvent evt) -> {
             
             if(!evt.getValueIsAdjusting() && tableProductos.getSelectedRow() != -1) {
@@ -190,6 +209,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             }
         });
         
+        //Se agrega el evento para hacer doble clic sobre la fila
         tableProductos.addMouseListener(new MouseAdapter() {
         
             @Override
@@ -199,7 +219,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
                    
                     if(tableProductos.getSelectedRow() != -1) {
                 
-                        editar(tableProductos.getValueAt(tableProductos.getSelectedRow(), 0) + "");
+                        actualizar(tableProductos.getValueAt(tableProductos.getSelectedRow(), 0) + "");
                     } 
                 }
             }

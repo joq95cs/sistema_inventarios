@@ -6,41 +6,48 @@ import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import java.awt.HeadlessException;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class MarcoFormProductos extends javax.swing.JFrame {
     
     public static MarcoFormProductos m = null;
 
-    public MarcoFormProductos(boolean cargar) throws Errores.LookAndFeelException, Errores.ConexionException {
+    public MarcoFormProductos(boolean cargar) throws Errores.ConexionException {
         
         initComponents();
         Utilidades.centrarMarco(this);
         setResizable(false);
-        
+
         if(LogicaProductos.crud == null) {
-            
+
             LogicaProductos.crud = new LogicaProductos();
         }
-        
+
         if(cargar) {
-            
+
             cargar();
         }
-        
-        campos = new JTextField[] {
-            textId,
-            textNombre,
-            textCategoria,
-            textStockMin,
-            textStockMax,
-            textStockIdeal,
-            textStockMaxPedido,
-            textStockReorden
-        };
+
+        this.campos = new JTextField[] {
+
+            textId, 
+            textNombre, 
+            textCategoria, 
+            textStockMin, 
+            textStockMax, 
+            textStockIdeal, 
+            textStockReorden, 
+            textStockMaxPedido
+        };       
     }
 
     @SuppressWarnings("unchecked")
@@ -69,7 +76,8 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         buttonEliminar = new javax.swing.JButton();
         buttonCargarExcel = new javax.swing.JButton();
         buttonLista = new javax.swing.JButton();
-        buttonEditarExcel = new javax.swing.JButton();
+        buttonExportarExcel = new javax.swing.JButton();
+        buttonArchivosExcel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Formulario Productos");
@@ -123,7 +131,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             }
         });
 
-        buttonCargarExcel.setText("CARGAR");
+        buttonCargarExcel.setText("CARGAR EXCEL");
         buttonCargarExcel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonCargarExcelActionPerformed(evt);
@@ -137,10 +145,17 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             }
         });
 
-        buttonEditarExcel.setText("EDITAR");
-        buttonEditarExcel.addActionListener(new java.awt.event.ActionListener() {
+        buttonExportarExcel.setText("EXPORTAR EXCEL");
+        buttonExportarExcel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonEditarExcelActionPerformed(evt);
+                buttonExportarExcelActionPerformed(evt);
+            }
+        });
+
+        buttonArchivosExcel.setText("ARCHIVOS EXCEL");
+        buttonArchivosExcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonArchivosExcelActionPerformed(evt);
             }
         });
 
@@ -172,19 +187,24 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                             .addComponent(textId, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(textStockMaxPedido)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buttonInsertar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonLista, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buttonBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonCargarExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(20, 20, 20)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(buttonEditarExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonActualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonEliminar)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(buttonInsertar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(buttonLista, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(buttonBuscar)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(buttonActualizar)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(buttonEliminar))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(buttonCargarExcel)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(buttonExportarExcel))))
+                            .addComponent(buttonArchivosExcel))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -233,7 +253,9 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonCargarExcel)
                     .addComponent(buttonLista)
-                    .addComponent(buttonEditarExcel))
+                    .addComponent(buttonExportarExcel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(buttonArchivosExcel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -280,10 +302,15 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         cargarExcel();
     }//GEN-LAST:event_buttonCargarExcelActionPerformed
 
-    private void buttonEditarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEditarExcelActionPerformed
+    private void buttonExportarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportarExcelActionPerformed
     
-        editarExcel();
-    }//GEN-LAST:event_buttonEditarExcelActionPerformed
+        exportarExcel();
+    }//GEN-LAST:event_buttonExportarExcelActionPerformed
+
+    private void buttonArchivosExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonArchivosExcelActionPerformed
+        
+        archivosExcel();
+    }//GEN-LAST:event_buttonArchivosExcelActionPerformed
 
     private void insertar() {
         
@@ -292,7 +319,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             if(Utilidades.obtenerCadena(textId) == null ||
                Utilidades.obtenerCadena(textNombre) == null) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos");
             }
             
             String id = Utilidades.obtenerCadena(textId);
@@ -341,7 +368,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch(Errores.CamposVaciosException | Errores.InsercionException | HeadlessException | NumberFormatException ex) {
+        } catch(Errores.CamposVaciosException | Errores.InsertarProductoException | HeadlessException | NumberFormatException ex) {
             
             if(ex.getClass().equals(NumberFormatException.class)) {
                 
@@ -360,7 +387,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             
             if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException("Campo de ID vacío");
+                throw new Errores.CamposVaciosException("Error de campos vacíos");
             }
             
             String id = Utilidades.obtenerCadena(textId);
@@ -368,7 +395,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             LogicaProductos.crud.buscarProducto(id);
             cargar();
             
-        } catch(Errores.BusquedaException | Errores.CamposVaciosException ex) {
+        } catch(Errores.BuscarProductoException | Errores.CamposVaciosException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -381,7 +408,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             if(Utilidades.obtenerCadena(textId) == null ||
                Utilidades.obtenerCadena(textNombre) == null) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos");
             }
             
             String id = Utilidades.obtenerCadena(textId);
@@ -428,7 +455,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch(Errores.ActualizacionException | Errores.CamposVaciosException | NumberFormatException ex) {
+        } catch(Errores.ActualizarProductoException | Errores.CamposVaciosException | HeadlessException | NumberFormatException ex) {
             
             if(ex.getClass().equals(NumberFormatException.class)) {
                 
@@ -447,7 +474,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             
             if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException("Campo de ID vacío");
+                throw new Errores.CamposVaciosException("Error de campos vacíos");
             }
             
             String id = Utilidades.obtenerCadena(textId);
@@ -457,7 +484,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             LogicaProductos.crud.setProducto(null);
             JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch(Errores.CamposVaciosException | Errores.EliminacionException | HeadlessException ex) {
+        } catch(Errores.CamposVaciosException | Errores.EliminarProductoException | HeadlessException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
         }
@@ -467,20 +494,43 @@ public class MarcoFormProductos extends javax.swing.JFrame {
 
         try {
             
-            File excel = new File("src/main/resources/excel/Productos.xlsx");
+            File carpeta = new File("src/main/resources/excel/productos"); //Se guarda la carpeta
             
-            if(excel.exists()) {
-                
-                if(JOptionPane.showConfirmDialog(this, "¿Cargar Excel editado?", "Elija una opción", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-                
-                    LogicaProductos.crud.cargarExcel(excel, 0);
-                    JOptionPane.showMessageDialog(this, "Carga de Excel editado exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
-                    return; 
+            if(carpeta.exists()) {
+            
+                File[] archivos = carpeta.listFiles(); //Se crea un array con los archivos
+
+                if(archivos != null && archivos.length > 0) { //Se verifica que la carpeta no este vacia
+
+                    int op = JOptionPane.showConfirmDialog(this, "¿Cargar Excel guardado?", "Elija una opción", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                    if(op == JOptionPane.YES_OPTION) { //Si se presiona yes
+
+                        JComboBox combo = new JComboBox();
+
+                        for (File each: archivos) {
+
+                            combo.addItem(each.getName());
+                        }
+
+                        if(JOptionPane.showConfirmDialog(null, combo, "Elija el archivo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_CANCEL_OPTION) {
+
+                            return;
+                        }
+
+                        LogicaProductos.crud.cargarExcel(archivos[combo.getSelectedIndex()], 0);
+                        JOptionPane.showMessageDialog(this, "Carga de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                        return; 
+                    }
+
+                    if(op == JOptionPane.CANCEL_OPTION) {
+
+                        return;
+                    }
                 }
-                
-                return;
             }
-                        
+            
+            //Si se presiona no o no existe la carpeta excel/productos
             JFileChooser chooser = new JFileChooser();
             
             if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -500,7 +550,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                         combo.addItem("Agregar");
                         int opcion = 0;
 
-                        if(JOptionPane.showConfirmDialog(this, combo, "Elija una opción", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                        if(JOptionPane.showConfirmDialog(this, combo, "Elija una opción", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION) {
 
                             if(combo.getSelectedItem().equals("Agregar")) {
 
@@ -514,29 +564,87 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                         
                         LogicaProductos.crud.cargarExcel(new File(ruta), opcion);
                         JOptionPane.showMessageDialog(this, "Carga de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        if(JOptionPane.showConfirmDialog(null, "¿Copiar el archivo?", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_NO_OPTION) {
+                            
+                            if(!carpeta.exists()) {
+                                
+                                carpeta.mkdirs();
+                            }
+                            
+                            Path origen = Paths.get(ruta);
+                            Path destino = Paths.get(carpeta.getPath() + "/" + new File(ruta).getName());
+                            LogicaProductos.crud.agregarExcel(origen, destino, "Productos");
+                            JOptionPane.showMessageDialog(this, "Copia de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        
                         return;
                     }
                 }
                 
-                throw new Errores.ExcelException("Archivo incorrecto");
+                throw new Errores.ArchivoIncorrectoException("Error de archivo incorrecto");
             }
             
-        } catch (Errores.ExcelException ex) {
+        } catch (Errores.AgregarExcelException | Errores.ArchivoIncorrectoException | Errores.CargarExcelException | HeadlessException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
-    private void editarExcel() {
+    private void exportarExcel() {
         
         try {
             
-            LogicaProductos.crud.editarExcel(new File("src/main/resources/excel/Productos.xlsx"));
+            //Se crea un panel con etiqueta y campo
+            JPanel pl = new JPanel();
+            pl.setLayout(new BoxLayout(pl, BoxLayout.Y_AXIS));
+            pl.add(new JLabel("Nota: Si ya existe será reemplazado"));
+            pl.add(Box.createVerticalStrut(10));
+            JTextField tf = new JTextField("Productos.xlsx");
+            pl.add(tf);
             
-        } catch(Errores.ExcelException ex) {
+            if(JOptionPane.showConfirmDialog(null, pl, "Ingrese el nombre del nuevo archivo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.CANCEL_OPTION) {
+                
+                return;
+            }
+            
+            String nombre = tf.getText().trim();
+            
+            if(!nombre.endsWith(".xlsx")) {
+                
+                nombre += ".xlsx";
+            }
+            
+            System.out.println(nombre);
+            
+            File carpeta = new File("src/main/resources/excel/productos");
+            
+            if(!carpeta.exists()) {
+                
+                carpeta.mkdirs(); 
+            }
+            
+            LogicaProductos.crud.exportarExcel(new File("src/main/resources/excel/productos/" + nombre), "Productos");
+            
+        } catch(Errores.ExportarExcelException | HeadlessException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void archivosExcel() {
+        
+        try {
+            
+            MarcoArchivosExcel.m = new MarcoArchivosExcel();
+            Utilidades.ejecutarMarco(MarcoArchivosExcel.m);
+            Utilidades.cerrarMarco(this);
+            
+        } catch(Errores.CargarArchivosExcelException | Errores.ConexionException ex) {
+            
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
     }
     
     private void lista() {
@@ -547,7 +655,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch(Errores.ConexionException | Errores.ListaException | Errores.LookAndFeelException ex) {
+        } catch(Errores.CargarListaException | Errores.ConexionException ex) {
             
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -566,12 +674,14 @@ public class MarcoFormProductos extends javax.swing.JFrame {
     }
     
     private final JTextField[] campos;
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActualizar;
+    private javax.swing.JButton buttonArchivosExcel;
     private javax.swing.JButton buttonBuscar;
     private javax.swing.JButton buttonCargarExcel;
-    private javax.swing.JButton buttonEditarExcel;
     private javax.swing.JButton buttonEliminar;
+    private javax.swing.JButton buttonExportarExcel;
     private javax.swing.JButton buttonInsertar;
     private javax.swing.JButton buttonLista;
     private javax.swing.JLabel labelCategoria;

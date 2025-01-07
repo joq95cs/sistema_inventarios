@@ -5,6 +5,7 @@ C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\jo
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\Main.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\Almacen.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\AlmacenObservacion.java
+C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\ArchivoExcel.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\Costos.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\Entrada.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\EntradaObservacion.java
@@ -24,6 +25,7 @@ C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\jo
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\SalidaObservacion.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\Usuario.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\orm\UsuarioContacto.java
+C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\vista\MarcoArchivosExcel.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\vista\MarcoFormProductos.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\vista\MarcoHome.java
 C:\Users\joqle\Desktop\Proyecto\Sistema_Inventarios\src\main\java\castellanos\joqsan\sistema_inventarios\vista\MarcoListaProductos.java
