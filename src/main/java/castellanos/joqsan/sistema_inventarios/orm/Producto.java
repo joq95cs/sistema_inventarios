@@ -57,6 +57,7 @@ public class Producto {
         session.clear();
     }
     
+    //Codigo de entidad
     public Producto() {
         
         this.id = null;

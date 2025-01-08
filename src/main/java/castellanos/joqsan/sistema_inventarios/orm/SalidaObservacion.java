@@ -16,21 +16,26 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "salidas_observaciones")
 public class SalidaObservacion {
     
+    //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(SalidaObservacion.class).buildSessionFactory().openSession();
-        
-        } catch(HibernateException ex) {
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            throw new Errores.ConexionException("Error de inicio de entidad SalidaObservacion");
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -38,14 +43,34 @@ public class SalidaObservacion {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
-
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public SalidaObservacion() {
     
         this.id = 0;
         this.id_salida = 0;
         this.observaciones = null;
-        this.fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = null;
     }
 
     public SalidaObservacion(int id_salida, String observaciones) {

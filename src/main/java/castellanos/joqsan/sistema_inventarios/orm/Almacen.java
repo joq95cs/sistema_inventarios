@@ -18,14 +18,16 @@ public class Almacen {
     
     //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-        
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
         } catch(ClassNotFoundException | HibernateException ex) {
             
             throw new Errores.ConexionException("Error de conexión");
@@ -36,6 +38,7 @@ public class Almacen {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
     public static void commit() {
@@ -56,6 +59,7 @@ public class Almacen {
         session.clear();
     }
     
+    //Codigo de entidad
     public Almacen() {
     
         this.id = 0;
@@ -138,7 +142,7 @@ public class Almacen {
         
         return "Almacen{" + "id=" + id + ", almacen=" + almacen + ", id_producto_stock=" + id_producto_stock + ", costo_promedio=" + costo_promedio + ", costo_total=" + costo_total + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

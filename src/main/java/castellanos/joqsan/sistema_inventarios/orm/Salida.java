@@ -16,22 +16,26 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
-
+//Entidad correcta
 @Entity
 @Table(name = "salidas")
 public class Salida {
     
+    //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Salida.class).buildSessionFactory().openSession();
-        
-        } catch(HibernateException ex) {
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            throw new Errores.ConexionException("Error de inicio de entidad Salida");
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -39,14 +43,34 @@ public class Salida {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public Salida() {
     
         this.id = 0;
         this.id_producto = null;
         this.cantidad = 0;
-        this.fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = null;
     }
 
     public Salida(String id_producto, int cantidad) {
@@ -107,7 +131,7 @@ public class Salida {
 
     @Override
     public String toString() {
-        
+       
         return "Salida{" + "id=" + id + ", id_producto=" + id_producto + ", cantidad=" + cantidad + ", fecha_hora=" + fecha_hora + '}';
     }
     

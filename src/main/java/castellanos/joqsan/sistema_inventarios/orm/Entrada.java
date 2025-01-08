@@ -22,14 +22,16 @@ public class Entrada {
     
     //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-        
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
         } catch(ClassNotFoundException | HibernateException ex) {
             
             throw new Errores.ConexionException("Error de conexión");
@@ -40,6 +42,7 @@ public class Entrada {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
     public static void commit() {
@@ -55,9 +58,15 @@ public class Entrada {
         }
     }
     
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public Entrada() {
     
-        id = 0;
+        this.id = 0;
         this.id_producto = null;
         this.cantidad = 0;
         this.id_usuario = 0;
@@ -66,11 +75,11 @@ public class Entrada {
 
     public Entrada(String id_producto, int cantidad, int id_usuario) {
         
-        id = 0;
+        this.id = 0;
         this.id_producto = id_producto;
         this.cantidad = cantidad;
         this.id_usuario = id_usuario;
-        fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = new GregorianCalendar().getTime();
     }
 
     public Entrada(int id, String id_producto, int cantidad, int id_usuario) {
@@ -79,7 +88,7 @@ public class Entrada {
         this.id_producto = id_producto;
         this.cantidad = cantidad;
         this.id_usuario = id_usuario;
-        fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = new GregorianCalendar().getTime();
     }
 
     public int getId() {
@@ -137,7 +146,7 @@ public class Entrada {
         
         return "Entrada{" + "id=" + id + ", id_producto=" + id_producto + ", cantidad=" + cantidad + ", id_usuario=" + id_usuario + ", fecha_hora=" + fecha_hora + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

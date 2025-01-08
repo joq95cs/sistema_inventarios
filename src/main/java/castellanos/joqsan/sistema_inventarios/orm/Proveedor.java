@@ -12,21 +12,26 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "proveedores")
 public class Proveedor {
     
-    public static Session session;
+    //Codigo de configuraciones
+    public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(Proveedor.class).buildSessionFactory().openSession();
-        
-        } catch(HibernateException ex) {
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            throw new Errores.ConexionException("Error de inicio de entidad Proveedor");
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -34,8 +39,28 @@ public class Proveedor {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public Proveedor() {
         
         this.id = 0;

@@ -14,6 +14,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "archivos_excel")
 public class ArchivoExcel {
@@ -61,6 +62,7 @@ public class ArchivoExcel {
         session.clear();
     }
     
+    //Codigo de entidad
     public ArchivoExcel() {
         
         this.id = 0;
@@ -130,7 +132,7 @@ public class ArchivoExcel {
         
         return "ArchivoExcel{" + "id=" + id + ", nombre=" + nombre + ", tabla=" + tabla + ", fecha_hora=" + fecha_hora + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

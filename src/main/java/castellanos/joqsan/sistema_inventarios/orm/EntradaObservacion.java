@@ -20,17 +20,21 @@ import org.hibernate.cfg.Configuration;
 @Table(name = "entradas_observaciones")
 public class EntradaObservacion {
     
+    //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(EntradaObservacion.class).buildSessionFactory().openSession();
-        
-        } catch(HibernateException ex) {
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
             
-            throw new Errores.ConexionException("Error de inicio de entidad EntradaObservacion");
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
         }
     }
     
@@ -38,14 +42,34 @@ public class EntradaObservacion {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public EntradaObservacion() {
     
         this.id = 0;
         this.id_entrada = 0;
         this.observaciones = null;
-        this.fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = null;
     }
 
     public EntradaObservacion(int id_entrada, String observaciones) {
@@ -58,7 +82,6 @@ public class EntradaObservacion {
 
     public EntradaObservacion(int id, int id_entrada, String observaciones) {
         
-        this.id = 0;
         this.id = id;
         this.id_entrada = id_entrada;
         this.observaciones = observaciones;
@@ -109,7 +132,7 @@ public class EntradaObservacion {
         
         return "EntradaObservacion{" + "id=" + id + ", id_entrada=" + id_entrada + ", observaciones=" + observaciones + ", fecha_hora=" + fecha_hora + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

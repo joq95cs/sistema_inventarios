@@ -16,20 +16,23 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "almacenes_observaciones")
 public class AlmacenObservacion {
     
     //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-        
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
         } catch(ClassNotFoundException | HibernateException ex) {
             
             throw new Errores.ConexionException("Error de conexión");
@@ -40,6 +43,7 @@ public class AlmacenObservacion {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
     public static void commit() {
@@ -60,6 +64,7 @@ public class AlmacenObservacion {
         session.clear();
     }
     
+    //Codigo de entidad
     public AlmacenObservacion() {
     
         this.id = 0;
@@ -70,6 +75,7 @@ public class AlmacenObservacion {
 
     public AlmacenObservacion(int id_almacen, String observaciones, GregorianCalendar fecha_hora) {
         
+        this.id = 0;
         this.id_almacen = id_almacen;
         this.observaciones = observaciones;
         this.fecha_hora = new GregorianCalendar().getTime();
@@ -128,7 +134,7 @@ public class AlmacenObservacion {
         
         return "AlmacenObservacion{" + "id=" + id + ", id_almacen=" + id_almacen + ", observaciones=" + observaciones + ", fecha_hora=" + fecha_hora + '}';
     }
-  
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

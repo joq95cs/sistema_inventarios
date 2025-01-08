@@ -12,20 +12,23 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "costos")
 public class Costos {
     
     //Codigo de configuraciones
     public static Session session = null;
+    public static Class type = null;
     
     public static void iniciar() throws Errores.ConexionException {
         
         try {
         
-            Class type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-        
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
         } catch(ClassNotFoundException | HibernateException ex) {
             
             throw new Errores.ConexionException("Error de conexión");
@@ -36,6 +39,7 @@ public class Costos {
         
         session.getSessionFactory().close();
         session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
     }
     
     public static void commit() {
@@ -56,6 +60,7 @@ public class Costos {
         session.clear();
     }
     
+    //Codigo de entidad
     public Costos() {
     
         this.id = 0;
@@ -151,7 +156,7 @@ public class Costos {
         
         return "Costos{" + "id=" + id + ", id_productos_stock=" + id_productos_stock + ", costo_promedio=" + costo_promedio + ", costo_total=" + costo_total + ", id_productos_proveedores=" + id_productos_proveedores + ", id_productos_precios=" + id_productos_precios + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

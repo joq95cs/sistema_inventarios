@@ -1,6 +1,7 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,17 +12,65 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "pedidos_observaciones")
 public class PedidoObservacion {
     
+    //Codigo de configuraciones
+    public static Session session = null;
+    public static Class type = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
     public PedidoObservacion() {
     
         this.id = 0;
         this.id_pedido = 0;
         this.observaciones = null;
-        this.fecha_hora = new GregorianCalendar().getTime();
+        this.fecha_hora = null;
     }
 
     public PedidoObservacion(int id_pedido, String observaciones, GregorianCalendar fecha_hora) {
@@ -85,7 +134,7 @@ public class PedidoObservacion {
         
         return "PedidoObservacion{" + "id=" + id + ", id_pedido=" + id_pedido + ", observaciones=" + observaciones + ", fecha_hora=" + fecha_hora + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

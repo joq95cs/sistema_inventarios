@@ -16,6 +16,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "productos_observaciones")
 public class ProductoObservacion {
@@ -63,6 +64,7 @@ public class ProductoObservacion {
         session.clear();
     }
     
+    //Codigo de entidad
     public ProductoObservacion() {
     
         this.id = 0;

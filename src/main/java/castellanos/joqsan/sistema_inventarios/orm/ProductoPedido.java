@@ -1,21 +1,80 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "productos_pedidos")
 public class ProductoPedido {
     
-    public ProductoPedido() {}
+    //Codigo de configuraciones
+    public static Session session = null;
+    public static Class type = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
+    public ProductoPedido() {
+    
+        this.id = 0;
+        this.id_producto_stock = 0;
+        this.unidades_pedidas = 0;
+        this.kilos_pedidos = 0;
+        this.costo_total = 0;
+        this.costo_total = 0;
+        this.id_pedido = 0;
+    }
 
     public ProductoPedido(int id_producto_stock, int unidades_pedidas, double kilos_pedidos, double costo_unitario, double costo_total, int id_pedido) {
         
+        this.id = 0;
         this.id_producto_stock = id_producto_stock;
         this.unidades_pedidas = unidades_pedidas;
         this.kilos_pedidos = kilos_pedidos;
@@ -110,7 +169,7 @@ public class ProductoPedido {
         
         return "ProductoPedido{" + "id=" + id + ", id_producto_stock=" + id_producto_stock + ", unidades_pedidas=" + unidades_pedidas + ", kilos_pedidos=" + kilos_pedidos + ", costo_unitario=" + costo_unitario + ", costo_total=" + costo_total + ", id_pedido=" + id_pedido + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

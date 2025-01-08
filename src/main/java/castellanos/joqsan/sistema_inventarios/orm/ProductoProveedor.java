@@ -1,22 +1,76 @@
 
 package castellanos.joqsan.sistema_inventarios.orm;
 
+import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 
 
 @Entity
 @Table(name = "productos_proveedores")
 public class ProductoProveedor {
     
-    public ProductoProveedor() {}
+    //Codigo de configuraciones
+    public static Session session = null;
+    public static Class type = null;
+    
+    public static void iniciar() throws Errores.ConexionException {
+        
+        try {
+        
+            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
+            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            
+        } catch(ClassNotFoundException | HibernateException ex) {
+            
+            throw new Errores.ConexionException("Error de conexión");
+        }
+    }
+    
+    public static void cerrar() {
+        
+        session.getSessionFactory().close();
+        session.close();
+        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+    }
+    
+    public static void commit() {
+        
+        session.getTransaction().commit();
+    }
+    
+    public static void rollback() {
+        
+        if(session.getTransaction() != null) {
+                
+            session.getTransaction().rollback();
+        }
+    }
+    
+    public static void limpiar() {
+        
+        session.clear();
+    }
+    
+    //Codigo de entidad
+    public ProductoProveedor() {
+    
+        this.id = 0;
+        this.id_producto = null;
+        this.precio_compra = 0;
+    }
 
     public ProductoProveedor(String id_producto, double precio_compra) {
         
+        this.id = 0;
         this.id_producto = id_producto;
         this.precio_compra = precio_compra;
     }
@@ -63,7 +117,7 @@ public class ProductoProveedor {
         
         return "ProductoProveedor{" + "id=" + id + ", id_producto=" + id_producto + ", precio_compra=" + precio_compra + '}';
     }
-    
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")

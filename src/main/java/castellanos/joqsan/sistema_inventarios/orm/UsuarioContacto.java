@@ -12,6 +12,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+//Entidad correcta
 @Entity
 @Table(name = "usuarios_contactos")
 public class UsuarioContacto {
@@ -59,6 +60,7 @@ public class UsuarioContacto {
         session.clear();
     }
     
+    //Codigo de la entidad
     public UsuarioContacto() {
     
         this.id = 0;
@@ -125,6 +127,7 @@ public class UsuarioContacto {
 
     @Override
     public String toString() {
+        
         return "UsuarioContacto{" + "id=" + id + ", id_usuario=" + id_usuario + ", tipo_contacto=" + tipo_contacto + ", contacto=" + contacto + '}';
     }
     
