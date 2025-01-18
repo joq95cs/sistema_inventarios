@@ -7,7 +7,6 @@ import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
@@ -16,17 +15,17 @@ public class MarcoListaProductos extends javax.swing.JFrame {
     
     public static MarcoListaProductos m = null;
 
-    public MarcoListaProductos() throws Errores.ConexionException, Errores.CargarListaException {
-        
+    public MarcoListaProductos() throws Errores.IniciarEntidadException, Errores.CargarListaProductosException  {
+
         initComponents();
         Utilidades.centrarMarco(this);
         setResizable(false);
-        
+
         if(LogicaProductos.crud == null) {
-            
+
             LogicaProductos.crud = new LogicaProductos();
         }
-        
+
         cargar();
     }
 
@@ -129,13 +128,15 @@ public class MarcoListaProductos extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
-        if(Producto.session != null) {
-                
-            Producto.cerrar();
-            System.out.println("---Entidad Producto cerrada---");
+        try {
+            
+            Utilidades.cerrarEntidad(Producto.class);
+            Utilidades.cerrarMarco(this);
+            
+        } catch (Errores.CerrarEntidadException ex) {
+           
+            Dialogos.d1(this, ex);
         }
-        
-        Utilidades.cerrarMarco(this);
     }//GEN-LAST:event_formWindowClosing
 
     private void actualizar(String id) {
@@ -144,7 +145,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             
             if(id == null) {
 
-                throw new Errores.CamposVaciosException("Campo de ID vacío");
+                throw new Errores.CamposVaciosException("Campo de ID vacío", null);
             }
 
             LogicaProductos.crud.cargarProducto(id);
@@ -152,7 +153,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         
         } catch(Errores.CamposVaciosException | Errores.CargarProductoException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
@@ -162,20 +163,22 @@ public class MarcoListaProductos extends javax.swing.JFrame {
             
             if(Utilidades.obtenerCadena(textID) == null) {
 
-                throw new Errores.CamposVaciosException("Campo de ID vacío");
+                throw new Errores.CamposVaciosException("Campo de ID vacío", null);
             }
             
             LogicaProductos.crud.eliminarProducto(Utilidades.obtenerCadena(textID));
-            JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+            Dialogos.d15(this);
+            
             cargar();
             
-        } catch(Errores.CamposVaciosException | Errores.CargarListaException | Errores.EliminarProductoException | HeadlessException ex) {
+        } catch(Errores.CamposVaciosException | Errores.CargarListaProductosException | Errores.EliminarProductoException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
-    private void cargar() throws Errores.CargarListaException {
+    private void cargar() throws Errores.CargarListaProductosException {
         
         DefaultTableModel modelo = new DefaultTableModel() {
         
@@ -198,7 +201,7 @@ public class MarcoListaProductos extends javax.swing.JFrame {
         tableProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         //Se llama al metodo encargado de consultar la table y modificar el modelo
-        LogicaProductos.crud.cargarLista(modelo);
+        LogicaProductos.crud.cargarListaProductos(modelo);
         
         //Se agrega el evento para que se escriba el id al seleccionar la fila
         tableProductos.getSelectionModel().addListSelectionListener((ListSelectionEvent evt) -> {

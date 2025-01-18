@@ -25,32 +25,35 @@ public class PedidoObservacion {
     public static Session session = null;
     public static Class type = null;
     
+    //Este metodo estatico permite conectar la sesion a la tabla de productos
     public static void iniciar() throws Errores.ConexionException {
         
         try {
-        
-            type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
+            
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            System.out.println(("---Entidad " + type.getSimpleName() + " iniciada---".toUpperCase()).toUpperCase());
             
-        } catch(ClassNotFoundException | HibernateException ex) {
+        } catch(HibernateException ex) {
             
-            throw new Errores.ConexionException("Error de conexión");
+            throw new Errores.ConexionException("Error de conexión", ex); //Se lanza una excepcion en caso de que no se pueda conectar a la tabla
         }
     }
     
+    //Este metodo permite cerrar la sesion y el factory
     public static void cerrar() {
         
         session.getSessionFactory().close();
         session.close();
-        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+        System.out.println(("---Entidad " + type.getSimpleName() + " cerrada---".toUpperCase()).toUpperCase());
     }
     
+    //Este metodo permite hacer commit en la sesion
     public static void commit() {
         
         session.getTransaction().commit();
     }
     
+    //Este metodo permite hacer rollback en la sesion
     public static void rollback() {
         
         if(session.getTransaction() != null) {
@@ -59,9 +62,18 @@ public class PedidoObservacion {
         }
     }
     
+    //Este metodo permite limpiar la sesion
+    //No se llama en caso de que los datos consultados previamente se vayan a usar
     public static void limpiar() {
         
         session.clear();
+    }
+    
+    //Este metodo permite iniciar la transaccion para operaciones que modifiquen la tabla
+    //No se necesita para leer la tabla
+    public static void begin() {
+        
+        session.beginTransaction();
     }
     
     //Codigo de entidad

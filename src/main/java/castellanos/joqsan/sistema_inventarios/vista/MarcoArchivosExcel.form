@@ -8,6 +8,9 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -28,11 +31,10 @@
               <Component id="scrollExcel" pref="408" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="buttonReemplazar" max="32767" attributes="0"/>
                   <Component id="buttonEliminar" alignment="0" max="32767" attributes="0"/>
                   <Component id="buttonAbrir" alignment="0" max="32767" attributes="0"/>
                   <Component id="buttonAgregar" max="32767" attributes="0"/>
-                  <Component id="buttonRegresar" max="32767" attributes="0"/>
+                  <Component id="buttonRegresar" pref="103" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -49,10 +51,8 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="buttonEliminar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="buttonReemplazar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="buttonAgregar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="62" max="32767" attributes="0"/>
+                      <EmptySpace pref="97" max="32767" attributes="0"/>
                       <Component id="buttonRegresar" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -97,14 +97,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEliminarActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="buttonReemplazar">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="REEMPLAZAR"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonReemplazarActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonAgregar">

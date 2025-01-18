@@ -8,11 +8,7 @@ import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -24,20 +20,20 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.query.Query;
 
+//Esta clase contiene la logica que se utiliza en el formulario de productos y otras ventanas que manipuen los productos
 public class LogicaProductos {
     
+    //Al igual que los marcos, las logicas tienen campos estaticos para manipular sus metodos
     public static LogicaProductos crud = null;
 
-    public LogicaProductos() throws Errores.ConexionException {
+    //El constructor hace la conexion a la base de datos de la entidad de productos
+    public LogicaProductos() throws Errores.IniciarEntidadException  {
         
-        if(Producto.session == null) {
-            
-            Producto.iniciar();
-        }
-        
-        producto = null;
+        Utilidades.iniciarEntidad(Producto.class); //Se inicia la entidad Producto
+        producto = null; //Se fija en null el producto
     }
 
+    //Se usa getter y setter para manipular el campo de clase desde fuera
     public Producto getProducto() {
         
         return producto;
@@ -48,19 +44,22 @@ public class LogicaProductos {
         this.producto = producto;
     }
     
+    //Todos los metodos de esta clase tienen errores personalizados asociados
+    //Cada metodo tiene un try catch que pemrite capturar errores y despues lanzar una excepcion propia del metodo
+    //En todos los metodos que usan una transaccion se llama al rollback en el catch
     public void insertarProducto() throws Errores.InsertarProductoException {
         
         try {
         
             Producto.limpiar(); //Se limpia la sesion porque iniciamos desde cero
-            Producto.session.beginTransaction();
-            Producto.session.persist(producto);
-            Producto.commit();
+            Producto.begin(); //Se inicia la transaccion porque la operacion modifica la tabla
+            Producto.session.persist(producto); //Se guarda el producto ya fijado en el campo
+            Producto.commit(); //Se confirman los cambios
         
         } catch(Exception ex) {
             
             Producto.rollback();
-            throw new Errores.InsertarProductoException("Error de inserción");
+            throw new Errores.InsertarProductoException("Error de inserción", ex); //Error personalizado
         } 
     }
 
@@ -69,21 +68,21 @@ public class LogicaProductos {
         try {
             
             Producto.limpiar(); //Se limpia la sesion porque iniciamos desde cero
-            producto = Producto.session.get(Producto.class, id);
+            producto = Producto.session.get(Producto.class, id); //Se obtiene el producto por medio del id recibido y se fija en el campo de clase
             
-            if(producto == null) {
+            if(producto == null) { //Si el id no existe en la tabla, el producto se quedara en null
                 
-                throw new Exception();
+                throw new Exception(); //Se lanza una excepcion sencilla
             }
             
         } catch(Exception ex) {
             
-            if(ex.getClass().equals(Exception.class)) {
+            if(ex.getClass().equals(Exception.class)) { //Si se detecta la excepcion sencilla
                 
-                throw new Errores.BuscarProductoException("Registro no encontrado");
+                throw new Errores.BuscarProductoException("Registro no encontrado", ex); //Se indica que el registro no fue encontrado
             }
             
-            throw new Errores.BuscarProductoException("Error de búsqueda");
+            throw new Errores.BuscarProductoException("Error de búsqueda", ex); //Error personalizado
         }
     }
     
@@ -92,12 +91,15 @@ public class LogicaProductos {
         try {
             
             //No se limpia la sesion porque se pueden usar datos buscados
-            Producto.session.beginTransaction();
+            Producto.begin();
             
-            if(this.producto != null) {
+            //En caso de que se haya llamado el metodo de buscar antes, el producto existe
+            if(this.producto != null) { //
                 
+                //Esto permite modificar tambie el id
                 if(!this.producto.getId().equals(producto.getId())) {
                 
+                    //Se usa una query para actualizar
                     String hql = "UPDATE Producto producto SET producto.id = :id2 WHERE producto.id = :id1"; 
                     Query query = Producto.session.createQuery(hql);
                     query.setParameter("id2", producto.getId());
@@ -106,11 +108,13 @@ public class LogicaProductos {
                     this.producto = Producto.session.get(Producto.class, producto.getId());
                 }
  
-            } else {
+            } else { //Si no se llamo al metodo de buscar antes, simplemente se usa el id ingresado para buscarlo
                 
+                //De esta manera no se puede actualizar el id, solo lo demas
                 this.producto = Producto.session.get(Producto.class, producto.getId());
             }
             
+            //Se hace la actualizacion del registro
             this.producto.setNombre(producto.getNombre());
             this.producto.setCategoria(producto.getCategoria());
             this.producto.setStock_min(producto.getStock_min());
@@ -118,12 +122,12 @@ public class LogicaProductos {
             this.producto.setStock_ideal(producto.getStock_ideal());
             this.producto.setStock_reorden(producto.getStock_reorden());
             this.producto.setStock_max_pedido(producto.getStock_max_pedido());
-            Producto.commit();
+            Producto.commit(); //Se confirman los cambios
             
         } catch(Exception ex) {
             
-            Producto.rollback();
-            throw new Errores.ActualizarProductoException("Error de actualización");
+            Producto.rollback(); //Se deshacen los cambios si sucede un error
+            throw new Errores.ActualizarProductoException("Error de actualización", ex);
         }
     }
     
@@ -131,45 +135,50 @@ public class LogicaProductos {
         
         try {
             
-            //No se limpia la sesion porque se pueden usar datos buscados
-            Producto.session.beginTransaction();
-            producto = Producto.session.get(Producto.class, id);
+            //No se limpia la sesion porque se pueden registros buscados previamente
+            Producto.begin();
+            producto = Producto.session.get(Producto.class, id); //Se guarda la el registro en base a su id
             
             if(producto == null) {
                 
-                throw new Exception();
+                throw new Exception(); //Significa que no se encontro un registro con ese id
             }
             
-            Producto.session.remove(producto);
-            Producto.commit();
+            Producto.session.remove(producto); //Se elimina el registro
+            Producto.commit(); //Se confirman los cambios
             
         } catch(Exception ex) {
             
             if(ex.getClass().equals(Exception.class)) {
                 
-                throw new Errores.EliminarProductoException("Registro no encontrado");
+                throw new Errores.EliminarProductoException("Registro no encontrado", ex); //Se indica que el registro no existe
             }
             
             Producto.rollback();
-            throw new Errores.EliminarProductoException("Error de eliminación");
+            throw new Errores.EliminarProductoException("Error de eliminación", ex);
         }
     }
     
     public void cargarExcel(File excel, int opcion) throws Errores.CargarExcelException {
         
         try {
-                       
-            FileInputStream stream = new FileInputStream(excel);
-            Workbook libro = new XSSFWorkbook(stream);
-            Sheet hoja = libro.getSheetAt(0);
-            ArrayList<Producto> registros = new ArrayList<>();
+              
+            //Se lee el archivo excel y se cargan los registros que contiene
+            //El archivo debe tener la estructura correcta para que funcione
+            //Si el archivo no tiene la estructura correcta se lanzara un error
+            FileInputStream stream = new FileInputStream(excel); //Se crea un stream
+            Workbook libro = new XSSFWorkbook(stream); //Se crea un libro
+            Sheet hoja = libro.getSheetAt(0); //Se utilizara solamente la primera hoja del archivo
+            ArrayList<Producto> registros = new ArrayList<>(); //Los registros se guardaran primero en un array
 
+            //Se usa un ciclo que recorre todas las filas de la hoja
             for(int i=1; i<=hoja.getLastRowNum(); i++) {
 
-                Row fila = hoja.getRow(i);
+                Row fila = hoja.getRow(i); //Se guarda la hoja en cada vuelta de ciclo
 
-                if(fila != null) {
+                if(fila != null) { //Se verifica que la fila exista
 
+                    //Se capturan los datos de las celdas
                     String id = fila.getCell(0).getStringCellValue();
                     String nombre = fila.getCell(1).getStringCellValue();
                     String categoria = fila.getCell(2).getStringCellValue();
@@ -179,32 +188,35 @@ public class LogicaProductos {
                     int stock_reorden = (int)fila.getCell(6).getNumericCellValue();
                     int stock_max_pedido = (int)fila.getCell(7).getNumericCellValue();
 
+                    //Se guarda el registro en el array
                     registros.add(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
                 }
             }
             
-            Producto.limpiar();
-            Producto.session.beginTransaction();
+            Producto.limpiar(); //Se limpia la sesion
+            Producto.begin(); //Se inicia la transaccion
             
+            //Si se eligio que el archivo reemplace la tabla
             if(opcion == 0) {
                 
                 String hql = "DELETE FROM Producto";
-                Producto.session.createQuery(hql).executeUpdate();
+                Producto.session.createQuery(hql).executeUpdate(); //Se usa una query para eliminar todo primero
             }
 
+            //Se guarda cada registro del array en la tabla
             for(Producto each : registros) {
                 
                 Producto.session.persist(each);
             }
             
-            Producto.commit();
-            libro.close();
-            stream.close();
+            Producto.commit(); //Se confirman los cambios
+            libro.close(); //Se cierra el libro
+            stream.close(); //Se cierra el stream
             
         } catch(Exception ex) {
             
             Producto.rollback();
-            throw new Errores.CargarExcelException("Error de carga de Excel");
+            throw new Errores.CargarExcelException("Error de carga de Excel", ex);
         }
     }
     
@@ -227,6 +239,7 @@ public class LogicaProductos {
             f1.setBold(true);
             e1.setFont(f1);
             
+            //Con un bucle se fija el estilo a usar en los encabezados
             for(int i=0; i<campos.length; i++) {
                 
                 hoja.getRow(0).createCell(i);
@@ -235,15 +248,17 @@ public class LogicaProductos {
             }
             
             //Se consulta la base de datos para escribir los registros
+            Producto.limpiar();
             String hql = "FROM Producto";
-            ArrayList<Producto> consulta = new ArrayList<>(Producto.session.createQuery(hql).list());
+            ArrayList<Producto> consulta = new ArrayList<>(Producto.session.createQuery(hql).list()); //Se guardan los registros de la tabla en un array
             
             int x = 1; //Empieza por 1 porque 0 es la fila de encabezados
             
             for(Producto each: consulta) { //Por cada registro se crea una fila
                 
-                Row fila = hoja.createRow(x);
+                Row fila = hoja.createRow(x); //Se guarda la fila en cada vuelta de bucle
                 
+                //Se fijan los registros en cada fila
                 fila.createCell(0).setCellValue(each.getId());
                 fila.createCell(1).setCellValue(each.getNombre());
                 fila.createCell(2).setCellValue(each.getCategoria());
@@ -265,10 +280,12 @@ public class LogicaProductos {
             f2.setBold(false);
             e2.setFont(f2);
             
+            //Se fijan con un bucle los estilos para los registros
             for(int i=1; i<=consulta.size(); i++) {
                 
-                Row fila = hoja.getRow(i);
+                Row fila = hoja.getRow(i); //Se guarda la fila en cada vuelta de ciclo
                 
+                //Se requieren bucles anidados para fijar en filas y celdas
                 for(int j=0; j<=7; j++) {
                     
                     fila.getCell(j).setCellStyle(e2);
@@ -287,74 +304,40 @@ public class LogicaProductos {
                    hoja.setColumnWidth(i, 20*256); //Para 20 caracteres 
                 }*/
                 
-                hoja.setColumnWidth(i, 20*256);
+                hoja.setColumnWidth(i, 20*256); //Para 20 caracteres
             }
             
+            //Se escribe el archivo usando el stream
             FileOutputStream stream = new FileOutputStream(excel);
             libro.write(stream);
             libro.close();
             stream.close();
             
+            //Si el archivo fue creado correctamente
             if(excel.exists()) {
                 
-                ArchivoExcel.iniciar();
-                ArchivoExcel.session.beginTransaction();
-                
-                hql = "DELETE FROM ArchivoExcel excel WHERE excel.nombre = :nombre";
-                Query query = ArchivoExcel.session.createQuery(hql);
-                query.setParameter("nombre", excel.getName());
-                query.executeUpdate();
-                
-                ArchivoExcel.session.persist(new ArchivoExcel(excel.getName(), tabla));
-                ArchivoExcel.commit();
-                ArchivoExcel.cerrar();
-                
+                //Ahora se llama a la logica de ArchivosExcel para agregar el registro a la tabla
+                LogicaArchivosExcel.crud.setExcel(new ArchivoExcel(excel.getName(), tabla));
+                LogicaArchivosExcel.crud.insertarArchivoExcel();
                 Desktop.getDesktop().open(excel);
             }
                      
         } catch(Exception ex) { //Se queda la clase base para manejar todo tipo de errores            
             
-            ArchivoExcel.rollback();
-            throw new Errores.ExportarExcelException("Error de exportación de Excel");
+            throw new Errores.ExportarExcelException("Error de exportación de Excel", ex);
         }
     }
     
-    public void cargarArchivosExcel(DefaultTableModel modelo) throws Errores.CargarArchivosExcelException {
+    public void cargarListaProductos(DefaultTableModel modelo) throws Errores.CargarListaProductosException {
         
         try {
             
-            ArchivoExcel.iniciar(); //Se debe conectar la entidad, no es necesario limpiar porque se esta iniciando
-            
-            //Se hace la consulta a la tabla y se guardan los resultados en el array
-            String hql = "FROM ArchivoExcel";
-            ArrayList<ArchivoExcel> archivos = new ArrayList<>(ArchivoExcel.session.createQuery(hql).list()); 
-            
-            for(ArchivoExcel each: archivos) {
-                
-                Object[] fila = {
-                
-                    each.getNombre(),
-                    each.getTabla(),
-                    each.getFecha_hora()
-                };
-                
-                modelo.addRow(fila);
-            }
-            
-        } catch(Exception ex) {
-            
-            throw new Errores.CargarArchivosExcelException("Error de carga de archivos Excel");
-        }
-    }
-    
-    public void cargarLista(DefaultTableModel modelo) throws Errores.CargarListaException {
-        
-        try {
-            
+            //Se cargan todos los registros en un array
             Producto.limpiar();
             String hql = "FROM Producto";
             ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
             
+            //Se lee el array y se agregan al modelo de la tabla
             for(Producto each: productos) {
                 
                 Object[] fila = {
@@ -374,7 +357,7 @@ public class LogicaProductos {
             
         } catch(Exception ex) {
             
-            throw new Errores.CargarListaException("Error de carga de lista");
+            throw new Errores.CargarListaProductosException("Error de carga de lista", ex);
         }
     }
     
@@ -382,11 +365,13 @@ public class LogicaProductos {
         
         try {
             
+            //Se obtiene el objeto en base al id
+            Producto.limpiar();
             producto = Producto.session.get(Producto.class, id);
             
             if(producto == null) {
                 
-                throw new Exception();
+                throw new Exception(); //Se lanza un error si no existe el registro
             }
             
             MarcoFormProductos.m = new MarcoFormProductos(true);
@@ -396,59 +381,19 @@ public class LogicaProductos {
             
             if(ex.getClass().equals(Exception.class)) {
                 
-                throw new Errores.CargarProductoException("Registro no encontrado"); 
+                throw new Errores.CargarProductoException("Registro no encontrado", ex); //Se indica que el registro no existe
             }
             
-            throw new Errores.CargarProductoException("Error de carga de producto");
+            throw new Errores.CargarProductoException("Error de carga de producto", ex);
         }
     }
     
-    public void eliminarExcel(File excel) throws Errores.EliminarExcelException {
-        
-        try {
-            
-            //Primero se elimina el archivo 
-            excel.delete();
-            
-            //Despues se elimina el registro de la tabla
-            ArchivoExcel.iniciar();
-            ArchivoExcel.session.beginTransaction();
-            String hql = "DELETE FROM ArchivoExcel excel WHERE excel.nombre = :nombre";
-            Query query = ArchivoExcel.session.createQuery(hql);
-            query.setParameter("nombre", excel.getName());
-            query.executeUpdate();
-            ArchivoExcel.commit();
-            ArchivoExcel.cerrar();
-            
-        } catch(Exception ex) {
-            
-            ArchivoExcel.rollback();
-            throw new Errores.EliminarExcelException("Error de eliminación de Excel");
-        }
-    }
+    private Producto producto; //Campo de clase
     
-    public void agregarExcel(Path origen, Path destino, String tabla) throws Errores.AgregarExcelException {
-        
-        try {
-            
-            Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
-            
-            ArchivoExcel.iniciar();
-            ArchivoExcel.session.beginTransaction();
-            ArchivoExcel.session.persist(new ArchivoExcel(
-            
-                new File(destino.toString()).getName(),
-                tabla
-            ));
-            
-            ArchivoExcel.commit();
-            ArchivoExcel.cerrar();
-            
-        } catch(Exception ex) {
-            
-            throw new Errores.AgregarExcelException("Error de copiado de Excel");
-        }
-    }
-    
-    private Producto producto;
+    //La clase LogicaProductos contiene la logica relacionada a la entidad Producto
+    //Cada entidad tiene su propia clase de logica
+    //El campo de clase privado se usa como almacenamiento de las instancias usadas por la logica
+    //Por ejemplo, para insertar un producto, primero se debe guardar un objeto de tipo Producto con setProducto
+    //Una vez que el producto ya esta fijado, se puede llamar al metodo de que lo utilice
+    //Todos los try catch usan la clase base para capturar cualquier error que suceda
 }

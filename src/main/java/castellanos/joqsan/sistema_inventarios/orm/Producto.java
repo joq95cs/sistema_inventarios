@@ -10,40 +10,45 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
+
 @Entity
 @Table(name = "productos")
 public class Producto {
     
     //Codigo de configuraciones
     public static Session session = null;
-    public static Class type = null;
+    private static Class<?> type = null; //El <?> indica el campo privado puede recibir guardar cualquier clase generica
     
+    //Este metodo estatico permite conectar la sesion a la tabla de productos
     public static void iniciar() throws Errores.ConexionException {
         
         try {
-        
+            
             type = Class.forName(Thread.currentThread().getStackTrace()[1].getClassName());
             session = new Configuration().configure("config/hibernate.cfg.xml").addAnnotatedClass(type).buildSessionFactory().openSession();
-            System.out.println("---Entidad " + type.getSimpleName() + " iniciada---");
+            System.out.println(("---Entidad " + type.getSimpleName() + " iniciada---".toUpperCase()).toUpperCase());
             
         } catch(ClassNotFoundException | HibernateException ex) {
             
-            throw new Errores.ConexionException("Error de conexión");
+            throw new Errores.ConexionException("Error de conexión", ex); //Se lanza una excepcion en caso de que no se pueda conectar a la tabla
         }
     }
     
+    //Este metodo permite cerrar la sesion y el factory
     public static void cerrar() {
         
         session.getSessionFactory().close();
         session.close();
-        System.out.println("---Entidad " + type.getSimpleName() + " cerrada---");
+        System.out.println(("---Entidad " + type.getSimpleName() + " cerrada---".toUpperCase()).toUpperCase());
     }
     
+    //Este metodo permite hacer commit en la sesion
     public static void commit() {
         
         session.getTransaction().commit();
     }
     
+    //Este metodo permite hacer rollback en la sesion
     public static void rollback() {
         
         if(session.getTransaction() != null) {
@@ -52,14 +57,24 @@ public class Producto {
         }
     }
     
+    //Este metodo permite limpiar la sesion
+    //No se llama en caso de que los datos consultados previamente se vayan a usar
     public static void limpiar() {
         
         session.clear();
     }
     
-    //Codigo de entidad
-    public Producto() {
+    //Este metodo permite iniciar la transaccion para operaciones que modifiquen la tabla
+    //No se necesita para leer la tabla
+    public static void begin() {
         
+        session.beginTransaction();
+    }
+    
+    //Codigo de entidad
+    public Producto() { //El constructor vacio fija todo en null o en 0
+        
+        //Los datos numeros se fijan en 0 y los campos no primitivos en null
         this.id = null;
         this.nombre = null;
         this.categoria = null;
@@ -192,4 +207,14 @@ public class Producto {
     
     @Column(name = "stock_max_pedido")
     private int stock_max_pedido;
+    
+    //Todas las entidades mapeadas tienen sus campos y metodos estaticos que permiten manipular la entidad desde fuera
+    //Los metodos estaticos permiten hacer la conexion a la tabla mapeada y otras funciones importantes
+    //Todas las entidades tienen la misma estructura
+    //Para usar cada entidad es necesario llamar los metodos y campos estaticos
+    //Todas las entidades tienen constructores basicos
+    //Tambien se pueden fijar y leer los campos con los getters y setters
+    //Todas las entidades tienen un metodo toString que permite ver los valores de los campos
+    //Todas las entidades tienen una clase de logica asociada
+    //La clase de logica asociada tiene un campo de clase que puede usarse como almacenamiento temporal para los metodos
 }

@@ -3,15 +3,14 @@ package castellanos.joqsan.sistema_inventarios.vista;
 
 import castellanos.joqsan.sistema_inventarios.logica.LogicaProductos;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
+import castellanos.joqsan.sistema_inventarios.logica.LogicaArchivosExcel;
+import castellanos.joqsan.sistema_inventarios.orm.ArchivoExcel;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import java.awt.HeadlessException;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,24 +18,38 @@ import javax.swing.JTextField;
 
 public class MarcoFormProductos extends javax.swing.JFrame {
     
+    //Todos los marcos o ventanas tienen un campo estatico para manipularlos desde fuera
+    //Siempre que se llame a un marco debe hacerse con estos campos
     public static MarcoFormProductos m = null;
 
-    public MarcoFormProductos(boolean cargar) throws Errores.ConexionException {
+    //Si se recibe true se carga el registro que este guardado en el crud de la logica de productos
+    public MarcoFormProductos(boolean cargar) throws Errores.ConexionException, Errores.IniciarEntidadException {
         
         initComponents();
-        Utilidades.centrarMarco(this);
-        setResizable(false);
 
+        Utilidades.centrarMarco(this); //Se centra el marco
+        setResizable(false); //Se fija un diseño fijo
+
+        //Se inicia la logica de productos
+        //La entidad Producto se inicia con su logica
         if(LogicaProductos.crud == null) {
 
             LogicaProductos.crud = new LogicaProductos();
         }
 
+        //Tambien se inicia la logica de archivos de excel porque se necesitaran
+        if(LogicaArchivosExcel.crud == null) {
+
+            LogicaArchivosExcel.crud = new LogicaArchivosExcel();
+        }
+
+        //Se llama al metodo de cargar en caso de que se reciba true
         if(cargar) {
 
             cargar();
         }
 
+        //Se inicia el array con todos los campos del formulario
         this.campos = new JTextField[] {
 
             textId, 
@@ -47,7 +60,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             textStockIdeal, 
             textStockReorden, 
             textStockMaxPedido
-        };       
+        }; 
     }
 
     @SuppressWarnings("unchecked")
@@ -284,12 +297,17 @@ public class MarcoFormProductos extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
-        if(Producto.session != null) {
-                
-            Producto.cerrar();
+        try {
+            
+            //Se cierran las entidades que ya no se van a utilizar
+            Utilidades.cerrarEntidad(Producto.class);
+            Utilidades.cerrarEntidad(ArchivoExcel.class);
+            Utilidades.cerrarMarco(this);
+            
+        } catch (Errores.CerrarEntidadException ex) {
+            
+            Dialogos.d1(this, ex);
         }
-        
-        Utilidades.cerrarMarco(this);
     }//GEN-LAST:event_formWindowClosing
 
     private void buttonListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonListaActionPerformed
@@ -312,16 +330,22 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         archivosExcel();
     }//GEN-LAST:event_buttonArchivosExcelActionPerformed
 
+    //Los metodos de los eventos llaman a sus metodos internos correspondientes
+    //Todos los metodos tiene una estructura try catch para capturar errores
+    
+    //Este metodo inserta un registro en la base de datos de acuerdo a los datos del formulario
     private void insertar() {
         
         try {
             
+            //Primero se verifica que no haya campos vacios
             if(Utilidades.obtenerCadena(textId) == null ||
                Utilidades.obtenerCadena(textNombre) == null) {
                 
-                throw new Errores.CamposVaciosException("Error de campos vacíos");
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
+            //Se definen las variables a usar
             String id = Utilidades.obtenerCadena(textId);
             String nombre = Utilidades.obtenerCadena(textNombre);
             String categoria = "No definido";
@@ -331,6 +355,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             int stock_reorden = 0;
             int stock_max_pedido = 0;
             
+            //Se comprueba que no existan nulos y se fijan los valores
             if(Utilidades.obtenerCadena(textCategoria) != null) {
                 
                 categoria = Utilidades.obtenerCadena(textCategoria);
@@ -361,56 +386,67 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 stock_max_pedido = Integer.parseInt(Utilidades.obtenerCadena(textStockMaxPedido));
             }
             
+            //Se llama a la logica correspondiente para insertar el producto
             Producto producto = new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido);
             LogicaProductos.crud.setProducto(producto);
             LogicaProductos.crud.insertarProducto();
-            Utilidades.limpiarCampos(campos, null);
             LogicaProductos.crud.setProducto(null);
-            JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            Utilidades.limpiarCampos(campos, null); //Se limpian los campos despues de insertar el registro
+            
+            Dialogos.d3(this); //Se muestra un dialogo de confirmacion
             
         } catch(Errores.CamposVaciosException | Errores.InsertarProductoException | HeadlessException | NumberFormatException ex) {
             
             if(ex.getClass().equals(NumberFormatException.class)) {
                 
-                JOptionPane.showMessageDialog(this, "Cadena ingresada", "Error", JOptionPane.ERROR_MESSAGE);
+                Dialogos.d2(this); //Se muestra un dialogo de error especifico
                 
             } else {
                
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                Dialogos.d1(this, ex); //Se muestra un dialogo de error general
             }  
         }
     }
     
+    //Este metodo busca un registro de acuerdo al campo de id y lo muestra en el formulario
     private void buscar() {
         
         try {
             
+            //Se verifica que el campo de id no este vacio
             if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException("Error de campos vacíos");
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
+            //Se fija la variable del id
             String id = Utilidades.obtenerCadena(textId);
             
+            //Se llama a la logica para buscar el producto segun el id
             LogicaProductos.crud.buscarProducto(id);
-            cargar();
+            cargar(); //Se llama un metodo interno para cargar el registro en el formulario
             
         } catch(Errores.BuscarProductoException | Errores.CamposVaciosException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
+    //Este metodo actualiza un registro de dos maneras diferentes
+    //Si se ha llamado al metodo de buscar primero, permite actualizar cualquier campo del registro
+    //Si no se ha llamado al metodo de buscar primero, se utiliza el campo de id para actualizar
     private void actualizar() {
         
         try {
             
+            //Se verifica que no haya valores nulos
             if(Utilidades.obtenerCadena(textId) == null ||
                Utilidades.obtenerCadena(textNombre) == null) {
                 
-                throw new Errores.CamposVaciosException("Error de campos vacíos");
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
+            //Se definen las variables a usar
             String id = Utilidades.obtenerCadena(textId);
             String nombre = Utilidades.obtenerCadena(textNombre);
             String categoria = "No definido";
@@ -420,6 +456,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
             int stock_reorden = 0;
             int stock_max_pedido = 0;
             
+            //Se fijan los valores del formulario en las variables
             if(Utilidades.obtenerCadena(textCategoria) != null) {
                 
                 categoria = Utilidades.obtenerCadena(textCategoria);
@@ -450,88 +487,165 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 stock_max_pedido = Integer.parseInt(Utilidades.obtenerCadena(textStockMaxPedido));
             }
 
+            //Se llama a la logica para actualizar el producto
             LogicaProductos.crud.actualizarProducto(new Producto(id, nombre, categoria, stock_min, stock_max, stock_ideal, stock_reorden, stock_max_pedido));
-            Utilidades.limpiarCampos(campos, null);
+            Utilidades.limpiarCampos(campos, null); //Despues de actualizar se limpian los campos del formulario
             LogicaProductos.crud.setProducto(null);
-            JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+            Dialogos.d4(this); //Se muestra un dialogo de confirmacion
             
         } catch(Errores.ActualizarProductoException | Errores.CamposVaciosException | HeadlessException | NumberFormatException ex) {
             
             if(ex.getClass().equals(NumberFormatException.class)) {
                 
-                JOptionPane.showMessageDialog(this, "Cadena ingresada", "Error", JOptionPane.ERROR_MESSAGE);
+                Dialogos.d5(this);
                 
             } else {
                
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                Dialogos.d1(this, ex);
             } 
         } 
     }
     
+    //Este metodo permite eliminar un registro en base a su id
     private void eliminar() {
         
         try {
             
+            //Se verifica que el campo de id no sea vacio
             if(Utilidades.obtenerCadena(textId) == null) {
                 
-                throw new Errores.CamposVaciosException("Error de campos vacíos");
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
+            //Se fija la variable del id
             String id = Utilidades.obtenerCadena(textId);
             
+            //Se llama a la logica para eliminar el producto
             LogicaProductos.crud.eliminarProducto(id);
-            Utilidades.limpiarCampos(campos, null);
+            Utilidades.limpiarCampos(campos, null); //Se limpian los campos del formulario despues de eliminar
             LogicaProductos.crud.setProducto(null);
-            JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+            Dialogos.d6(this); //Se muestra un dialogo de confirmacion
             
         } catch(Errores.CamposVaciosException | Errores.EliminarProductoException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
+            Dialogos.d1(this, ex);
         }
     }
     
+    //Este metodo permite tomar un archivo excel y cargarlo de dos maneras diferentes
+    //Si existen archivos guardados internamente, pregunta si se desea usar uno de ellos
+    //Si no existen archivos guardados internamente, se abre un chooser para seleccionarlo
+    //Aunque existan archivos, si el usuario no acepta usar uno guarado, se abre tambien el chooser
     private void cargarExcel() {
 
         try {
             
-            File carpeta = new File("src/main/resources/excel/productos"); //Se guarda la carpeta
+            File carpeta = new File("storage/excel/productos"); //Se guarda la carpeta
             
+            //Se verifica que exista la carpeta con los archivos guardados
             if(carpeta.exists()) {
             
                 File[] archivos = carpeta.listFiles(); //Se crea un array con los archivos
 
                 if(archivos != null && archivos.length > 0) { //Se verifica que la carpeta no este vacia
 
-                    int op = JOptionPane.showConfirmDialog(this, "¿Cargar Excel guardado?", "Elija una opción", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    int op = Dialogos.d7(this);
 
                     if(op == JOptionPane.YES_OPTION) { //Si se presiona yes
 
-                        JComboBox combo = new JComboBox();
+                        JComboBox combo = new JComboBox(); //Se usa un combo para elegir las opciones
 
                         for (File each: archivos) {
 
-                            combo.addItem(each.getName());
+                            combo.addItem(each.getName()); //Se agrega un item por cada archivo de la carpeta
                         }
 
-                        if(JOptionPane.showConfirmDialog(null, combo, "Elija el archivo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_CANCEL_OPTION) {
+                        if(Dialogos.d8(this, combo) == JOptionPane.OK_CANCEL_OPTION) {
 
                             return;
                         }
 
+                        //Se llama a la logica para cargar el archivo excel
                         LogicaProductos.crud.cargarExcel(archivos[combo.getSelectedIndex()], 0);
-                        JOptionPane.showMessageDialog(this, "Carga de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
-                        return; 
-                    }
+                        
+                        Dialogos.d9(this); //Se muestra un dialogo de confirmacion
+                        
+                        return; //Se termina el metodo porque ya no hay nada mas que hacer
+                        
+                    } else if(op == JOptionPane.CANCEL_OPTION) {
 
-                    if(op == JOptionPane.CANCEL_OPTION) {
-
-                        return;
+                        return; //Si el usuario cancela el chooser se termina el metodo
                     }
                 }
             }
             
+            //Si se elije que no, no existe la carpeta o esta vacia
+            //Se llama a la clase Copiador para agregar el archivo al almacenamiento interno
+            LogicaArchivosExcel.Copiador copiador = new LogicaArchivosExcel.Copiador();
+            
+            //Los metodos del copiador deben ejecutarse en cadena, cada uno debe regresar true para ejecutar el siguiente
+            if(copiador.elegirOrigen("xlsx", this)) { //Se elige el origen y se verifica que la extension sea la correcta
+                
+                if(copiador.getRutaOrigen() == null) {
+                    
+                    return; //En caso de que el usuario cancele el chooser se termina el metodo
+                }
+                
+                //Se crea un combo para opciones
+                JComboBox combo = new JComboBox();
+                combo.addItem("Reemplazar");
+                combo.addItem("Agregar");
+                int opcion = 0; //Por defecto se fija el valor 0
+
+                //Se llama al dialogo y se verifica que se presione ok
+                if(Dialogos.d10(this, combo) == JOptionPane.OK_OPTION) {
+
+                    if(combo.getSelectedItem().equals("Agregar")) {
+
+                        opcion = 1; //Si se elige la opcion de agregar se fija el valor 1
+                    }
+
+                } else {
+
+                    return; //En caso de que el dialogo se cancele se termina el metodo
+                }
+                     
+                //La opcion 0 indica que los registros del excel reemplazaran por completo a la tabla existente
+                //La opcion 1 indica que los registros del excel se agregaran a los registros ya existentes de la tabla
+                //Se llama a la logica para cargar el archivo excel
+                LogicaProductos.crud.cargarExcel(new File(copiador.getRutaOrigen()), opcion);
+                
+                Dialogos.d11(this); //Se muestra un dialogo de confirmacion
+                        
+                if(Dialogos.d12(this) == JOptionPane.YES_NO_OPTION) { //Si se presiona que si
+                        
+                    //Si los metodos del copiador te regresan false entonces se lanza un error del copiador
+                    if(!copiador.elegirDestino("excel/productos", new File(copiador.getRutaOrigen()).getName()) || !copiador.copiar()) {
+                        
+                        throw new Errores.CopiadorException("Error de copiado de archivo", null); 
+                    }
+                    
+                    //Se llama a la logica para guardar el archivo excel
+                    LogicaArchivosExcel.crud.setExcel(new ArchivoExcel(
+
+                        new File(copiador.getRutaOrigen()).getName(),
+                        "Productos"
+                    ));
+                                        
+                    LogicaArchivosExcel.crud.insertarArchivoExcel();
+                    
+                    Dialogos.d13(this); //Se muestra dialogo de confirmacion
+                }
+                
+            } else {
+                
+                //Si la extension no corresponde se muestra un error
+                throw new Errores.ArchivoIncorrectoException("Archivo incorrecto", null);
+            }
             //Si se presiona no o no existe la carpeta excel/productos
-            JFileChooser chooser = new JFileChooser();
+            /*JFileChooser chooser = new JFileChooser();
             
             if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 
@@ -567,15 +681,29 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                         
                         if(JOptionPane.showConfirmDialog(null, "¿Copiar el archivo?", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_NO_OPTION) {
                             
-                            if(!carpeta.exists()) {
+                            Copiador copiador = new Copiador();
+                            copiador.setRutaOrigen(ruta);
+                            copiador.setRutaDestino("excel/" + new File(ruta).getName());
+                            
+                            if(!copiador.copiar()) {
                                 
-                                carpeta.mkdirs();
+                                throw new Errores.CopiadorException("Error de copiado de archivo");
                             }
                             
-                            Path origen = Paths.get(ruta);
-                            Path destino = Paths.get(carpeta.getPath() + "/" + new File(ruta).getName());
-                            LogicaProductos.crud.agregarExcel(origen, destino, "Productos");
+                            if(LogicaArchivosExcel.crud == null) {
+
+                                LogicaArchivosExcel.crud = new LogicaArchivosExcel();
+                            }
+                            
+                            LogicaArchivosExcel.crud.setExcel(new ArchivoExcel(
+                                    
+                                new File(ruta).getName(),
+                                "Productos"
+                            ));
+                            LogicaArchivosExcel.crud.insertarArchivoExcel();
+                            
                             JOptionPane.showMessageDialog(this, "Copia de Excel exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                            ArchivoExcel.cerrar();
                         }
                         
                         return;
@@ -583,84 +711,94 @@ public class MarcoFormProductos extends javax.swing.JFrame {
                 }
                 
                 throw new Errores.ArchivoIncorrectoException("Error de archivo incorrecto");
-            }
+            }*/
             
-        } catch (Errores.AgregarExcelException | Errores.ArchivoIncorrectoException | Errores.CargarExcelException | HeadlessException ex) {
+        } catch (Errores.ArchivoIncorrectoException | Errores.CargarExcelException | Errores.CopiadorException | Errores.InsertarArchivoExcelException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
+    //Este metodo permite tomar la tabla y exportarla a un archivo excel
     private void exportarExcel() {
         
         try {
             
             //Se crea un panel con etiqueta y campo
-            JPanel pl = new JPanel();
-            pl.setLayout(new BoxLayout(pl, BoxLayout.Y_AXIS));
-            pl.add(new JLabel("Nota: Si ya existe será reemplazado"));
-            pl.add(Box.createVerticalStrut(10));
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.add(new JLabel("Nota: Si ya existe será reemplazado"));
+            panel.add(Box.createVerticalStrut(10));
             JTextField tf = new JTextField("Productos.xlsx");
-            pl.add(tf);
+            panel.add(tf);
             
-            if(JOptionPane.showConfirmDialog(null, pl, "Ingrese el nombre del nuevo archivo", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.CANCEL_OPTION) {
+            //Se muestra un dialogo con el panel creado anteriormente
+            if(Dialogos.d14(this, panel) == JOptionPane.CANCEL_OPTION) {
                 
                 return;
             }
             
+            //Se fija el nombre a utilizar para crear el archivo
+            //En caso de que se ingrese un nombre que ya existe, el archivo reemplazara al anterior
             String nombre = tf.getText().trim();
             
+            //Se verifica si se escribio la extension, si no, se agrega
             if(!nombre.endsWith(".xlsx")) {
                 
                 nombre += ".xlsx";
             }
             
-            System.out.println(nombre);
+            //Se guarda la carpeta donde se tiene que guardar el archivo exportado
+            File carpeta = new File("storage/excel/productos"); //Es la misma carpeta de almacenamiento interno
             
-            File carpeta = new File("src/main/resources/excel/productos");
-            
-            if(!carpeta.exists()) {
+            if(!carpeta.exists()) { //Si no existe la carpeta se debe de crear
                 
                 carpeta.mkdirs(); 
             }
             
-            LogicaProductos.crud.exportarExcel(new File("src/main/resources/excel/productos/" + nombre), "Productos");
+            //Se llama a la logica para exportar el archivo
+            LogicaProductos.crud.exportarExcel(new File("storage/excel/productos/" + nombre), "Productos");
             
         } catch(Errores.ExportarExcelException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
+    //ESte metodo permite llamar a otra venta que muestra los archivos excel del almacenamiento interno
     private void archivosExcel() {
         
         try {
             
+            //Se crea y se ejecuta el marco correspondiente
             MarcoArchivosExcel.m = new MarcoArchivosExcel();
             Utilidades.ejecutarMarco(MarcoArchivosExcel.m);
             Utilidades.cerrarMarco(this);
             
-        } catch(Errores.CargarArchivosExcelException | Errores.ConexionException ex) {
+        } catch(Errores.CargarArchivosExcelException | Errores.IniciarEntidadException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
-        
     }
     
+    //Este metodo permite llamar a la ventana para mostrar los registros de la tabla en una lista
     private void lista() {
         
         try {
             
+            //Se crea y se ejecuta el marco
             MarcoListaProductos.m = new MarcoListaProductos();
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch(Errores.CargarListaException | Errores.ConexionException ex) {
+        } catch(Errores.CargarListaProductosException | Errores.IniciarEntidadException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
+    //Este metodo privado simplemente permite cargar un registro en el formulario
+    //Se llama cuando se busca un archivo y tambien cuando se inicia el marco con el atributo true
     private void cargar() {
         
         textId.setText(LogicaProductos.crud.getProducto().getId());
@@ -673,8 +811,7 @@ public class MarcoFormProductos extends javax.swing.JFrame {
         textStockMaxPedido.setText(LogicaProductos.crud.getProducto().getStock_max_pedido() + "");
     }
     
-    private final JTextField[] campos;
-    
+    private JTextField[] campos = null; //Se guardan los campos en un array para manipularlos mas facilmente
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActualizar;
     private javax.swing.JButton buttonArchivosExcel;

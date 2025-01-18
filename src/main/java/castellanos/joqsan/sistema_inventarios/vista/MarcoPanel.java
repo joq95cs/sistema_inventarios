@@ -118,7 +118,7 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoFormProductos.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.ConexionException ex) {
+        } catch(Errores.ConexionException | Errores.IniciarEntidadException ex) {
             
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
@@ -161,7 +161,7 @@ public class MarcoPanel extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoHome.m);
             Utilidades.cerrarMarco(this);
                     
-        } catch(Errores.LookAndFeelException ex) {
+        } catch(Exception ex) {
             
             ex.printStackTrace();
         }

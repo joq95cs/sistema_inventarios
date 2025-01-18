@@ -1,20 +1,21 @@
 package castellanos.joqsan.sistema_inventarios.logica;
 
+import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.orm.ProductoObservacion;
+import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
 import java.util.ArrayList;
 import org.hibernate.query.Query;
 
+//Esta clase sigue el mismo formato y es complementaria a la logica de productos
+//Se usa para las operaciones de la las observaciones de los productos
 public class LogicaProductosObs {
+    
     
     public static LogicaProductosObs crud = null;
     
-    public LogicaProductosObs() throws Errores.ConexionException {
+    public LogicaProductosObs() throws Errores.IniciarEntidadException  {
         
-        if(ProductoObservacion.session == null) {
-            
-            ProductoObservacion.iniciar();
-        }
-        
+        Utilidades.iniciarEntidad(ProductoObservacion.class);
         pobs = null;
         
     }
@@ -29,22 +30,24 @@ public class LogicaProductosObs {
         this.pobs = pobs;
     }
     
+    //Este metodo permite insertar una observacion
     public void insertarObservacion() throws Errores.InsertarPobsException  {
         
         try {
             
             ProductoObservacion.limpiar();
-            ProductoObservacion.session.beginTransaction();
+            ProductoObservacion.begin();
             ProductoObservacion.session.persist(pobs);
             ProductoObservacion.commit();
             
         } catch(Exception ex) {
             
             ProductoObservacion.rollback();
-            throw new Errores.InsertarPobsException("Error de insercion");
+            throw new Errores.InsertarPobsException("Error de insercion", ex);
         }
     }
     
+    //Este metodo permite buscar y cargar una observacion
     public void buscarObservacion(String id_producto) throws Errores.BuscarPobsException {
         
         try {
@@ -66,18 +69,19 @@ public class LogicaProductosObs {
             
             if(ex.getClass().equals(Exception.class)) {
                 
-                throw new Errores.BuscarPobsException("Registro no encontrado");
+                throw new Errores.BuscarPobsException("Registro no encontrado", ex);
             }
             
-            throw new Errores.BuscarPobsException("Error de búsqueda");
+            throw new Errores.BuscarPobsException("Error de búsqueda", ex);
         }
     }
     
+    //Este metodo permite eliminar una observacion
     public void eliminarObservacion(String id_producto) throws Errores.EliminarPobsException {
         
         try {
             
-            ProductoObservacion.session.beginTransaction();
+            ProductoObservacion.begin();
             String hql = "FROM ProductoObservacion WHERE id_producto = :idProducto";
             Query query = ProductoObservacion.session.createQuery(hql);
             query.setParameter("idProducto", id_producto);
@@ -96,19 +100,20 @@ public class LogicaProductosObs {
             
             if(ex.getClass().equals(Exception.class)) {
                 
-                throw new Errores.EliminarPobsException("Registro no encontrado");
+                throw new Errores.EliminarPobsException("Registro no encontrado", ex);
             }
             
             ProductoObservacion.rollback();
-            throw new Errores.EliminarPobsException("Error de eliminación");
+            throw new Errores.EliminarPobsException("Error de eliminación", ex);
         }
     }
     
+    //Este metodo permite actualizar una observacion
     public void actualizarObservacion(ProductoObservacion pobs) throws Errores.ActualizarPobsException  {
         
         try {
             
-            ProductoObservacion.session.beginTransaction();
+            ProductoObservacion.begin();
             
             if(this.pobs != null && !this.pobs.getId_producto().equals(pobs.getId_producto())) {
                   
@@ -140,9 +145,10 @@ public class LogicaProductosObs {
         } catch(Exception ex) {
             
             ProductoObservacion.rollback();
-            throw new Errores.ActualizarPobsException("Error de actualización");
+            throw new Errores.ActualizarPobsException("Error de actualización", ex);
         }
     }
     
+    //El objeto pobs es el campo de clase
     private ProductoObservacion pobs;
 }

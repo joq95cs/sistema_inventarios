@@ -8,7 +8,7 @@ public class MarcoHome extends javax.swing.JFrame {
     
     public static MarcoHome m = null;
 
-    public MarcoHome() throws Errores.LookAndFeelException {
+    public MarcoHome() {
         
         initComponents();
         Utilidades.centrarMarco(this);
@@ -84,7 +84,7 @@ public class MarcoHome extends javax.swing.JFrame {
             Utilidades.ejecutarMarco(MarcoListaProductos.m);
             Utilidades.cerrarMarco(this);
             
-        } catch (Errores.CargarListaException | Errores.ConexionException ex) {
+        } catch (Errores.CargarListaProductosException | Errores.IniciarEntidadException ex) {
         
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

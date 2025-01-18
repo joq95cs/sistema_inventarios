@@ -1,337 +1,247 @@
 
 package castellanos.joqsan.sistema_inventarios.logica;
 
-//Todos las clases imprimen la pila de errores
-public class Errores {
+//CLASE CONTENEDORA GENERAL DE ERRRORES
+public class Errores extends Exception {
     
-    public static class InsertarProductoException extends Exception {
+    public Errores(String m, Exception ex, Class tipo) {
         
-        public InsertarProductoException(String m) {
+        //ARGUMENTOS RECIBIDOS
+        //m: Mensaje personalizado
+        //ex: Objeto de error original que causo el error
+        //tipo: Clase relacionada al error original sucedido
+        
+        super(m); //Se llama al constructor padre y se le pasa el mensaje recibido
+        System.err.println("---ERROR---");
+        System.err.println("Tipo: " + tipo.getSimpleName()); //Se imprime el nombre de la clase recibida
+        
+        if(ex != null) { //Se verifica que el objeto de error recibido exista
             
-            super(m);
-            printStackTrace();
+            System.err.println("Causa: " + ex.getClass().toString() + " -> " + ex.getMessage()); //Se imprime informacion del error original
         }
         
-        public InsertarProductoException() {
+        System.err.println("---STACK TRACE---");
+        printStackTrace(); //Se imprime la pila de ejecucion
+    }
+    
+    //CLASES DE ERRORES ESPECIFICOS
+    public static class InsertarProductoException extends Errores {
+        
+        public InsertarProductoException(String m, Exception ex) {
             
-            super(InsertarProductoException.class.toString());
-            printStackTrace();
+            super(m, ex, InsertarProductoException.class);
         }
     }
     
-    public static class BuscarProductoException extends Exception {
+    public static class BuscarProductoException extends Errores {
         
-        public BuscarProductoException(String m) {
+        public BuscarProductoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public BuscarProductoException() {
-            
-            super(BuscarProductoException.class.toString());
-            printStackTrace();
+            super(m, ex, BuscarProductoException.class);
         }
     }
 
-    public static class ActualizarProductoException extends Exception {
+    public static class ActualizarProductoException extends Errores {
 
-        public ActualizarProductoException(String m) {
+        public ActualizarProductoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public ActualizarProductoException() {
-            
-            super(ActualizarProductoException.class.toString());
-            printStackTrace();
+            super(m, ex, ActualizarProductoException.class);
         }
     }
 
-    public static class EliminarProductoException extends Exception {
+    public static class EliminarProductoException extends Errores {
 
-        public EliminarProductoException(String m ) {
+        public EliminarProductoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public EliminarProductoException() {
-            
-            super(EliminarProductoException.class.toString());
-            printStackTrace();
+            super(m, ex, EliminarProductoException.class);
         }
     }
 
-    public static class CargarExcelException extends Exception {
+    public static class CargarExcelException extends Errores {
 
-        public CargarExcelException(String m) {
+        public CargarExcelException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public CargarExcelException() {
-            
-            super(CargarExcelException.class.toString());
-            printStackTrace();
+            super(m, ex, CargarExcelException.class);
         }
     }
 
-    public static class ExportarExcelException extends Exception {
+    public static class ExportarExcelException extends Errores {
         
-        public ExportarExcelException(String m) {
+        public ExportarExcelException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public ExportarExcelException() {
-            
-            super(ExportarExcelException.class.toString());
-            printStackTrace();
+            super(m, ex, ExportarExcelException.class);
         }
     }
     
-    public static class CargarArchivosExcelException extends Exception {
+    public static class CargarArchivosExcelException extends Errores {
         
-        public CargarArchivosExcelException (String m) {
+        public CargarArchivosExcelException (String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public CargarArchivosExcelException () {
-            
-            super(CargarArchivosExcelException .class.toString());
-            printStackTrace();
+            super(m, ex, CargarArchivosExcelException.class);
         }
     }
     
-    public static class CargarListaException extends Exception {
+    public static class CargarListaProductosException extends Errores {
         
-        public CargarListaException(String m) {
+        public CargarListaProductosException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public CargarListaException() {
-            
-            super(CargarListaException.class.toString());
-            printStackTrace();
+            super(m, ex, CargarListaProductosException.class);
         }
     }
 
-    public static class CargarProductoException extends Exception {
+    public static class CargarProductoException extends Errores {
         
-        public CargarProductoException(String m) {
+        public CargarProductoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public CargarProductoException() {
-            
-            super(CargarProductoException.class.toString());
-            printStackTrace();
+            super(m, ex, CargarProductoException.class);
         }
     }
     
-    //Todas las entidades lanzan esta excepcion cuando sucede un error de conexion
-    public static class ConexionException extends Exception { 
+    public static class ConexionException extends Errores { 
         
-        public ConexionException(String m) {
+        public ConexionException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public ConexionException() {
-            
-            super(ConexionException.class.toString());
-            printStackTrace();
+            super(m, ex, ConexionException.class);
         }
     }
     
-    public static class LookAndFeelException extends Exception {
+    public static class LookAndFeelException extends Errores {
         
-        public LookAndFeelException(String m) {
+        public LookAndFeelException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public LookAndFeelException() {
-            
-            super(LookAndFeelException.class.toString());
-            printStackTrace();
+            super(m, ex, LookAndFeelException.class);
         }
     }
     
-    public static class CamposVaciosException extends Exception {
+    public static class CamposVaciosException extends Errores {
         
-        public CamposVaciosException(String m) {
+        public CamposVaciosException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public CamposVaciosException() {
-            
-            super(CamposVaciosException.class.toString());
-            printStackTrace();
+            super(m, ex, CamposVaciosException.class);
         }
     }
     
-    public static class ArchivoIncorrectoException extends Exception {
+    public static class ArchivoIncorrectoException extends Errores {
         
-        public ArchivoIncorrectoException(String m) {
+        public ArchivoIncorrectoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public ArchivoIncorrectoException() {
-            
-            super(ArchivoIncorrectoException.class.toString());
-            printStackTrace();
+            super(m, ex, ArchivoIncorrectoException.class);
         }
     }
     
-    public static class InsertarPobsException extends Exception {
+    public static class InsertarPobsException extends Errores {
         
-        public InsertarPobsException(String m) {
+        public InsertarPobsException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public InsertarPobsException() {
-            
-            super(InsertarPobsException.class.toString());
-            printStackTrace();
+            super(m, ex, InsertarPobsException.class);
         }
     }
     
-    public static class BuscarPobsException extends Exception {
+    public static class BuscarPobsException extends Errores {
         
-        public BuscarPobsException(String m) {
+        public BuscarPobsException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public BuscarPobsException() {
-            
-            super(BuscarPobsException.class.toString());
-            printStackTrace();
+            super(m, ex, BuscarPobsException.class);
         }
     }
     
-    public static class EliminarPobsException extends Exception {
+    public static class EliminarPobsException extends Errores {
         
-        public EliminarPobsException(String m) {
+        public EliminarPobsException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public EliminarPobsException() {
-            
-            super(EliminarPobsException.class.toString());
-            printStackTrace();
+            super(m, ex, EliminarPobsException.class);
         }
     }
     
-    public static class ActualizarPobsException extends Exception {
+    public static class ActualizarPobsException extends Errores {
         
-        public ActualizarPobsException(String m) {
+        public ActualizarPobsException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public ActualizarPobsException() {
-            
-            super(ActualizarPobsException.class.toString());
-            printStackTrace();
+            super(m, ex, ActualizarPobsException.class);
         }
     }
     
-    public static class LogicaProductosException extends Exception {
+    public static class LogicaProductosException extends Errores {
         
-        public LogicaProductosException(String m) {
+        public LogicaProductosException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public LogicaProductosException() {
-            
-            super(LogicaProductosException.class.toString());
-            printStackTrace();
+            super(m, ex, LogicaProductosException.class);
         }
     }
     
-    public static class UsuarioValidoException extends Exception {
+    public static class UsuarioValidoException extends Errores {
         
-        public UsuarioValidoException(String m) {
+        public UsuarioValidoException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public UsuarioValidoException() {
-            
-            super(UsuarioValidoException.class.toString());
-            printStackTrace();
+            super(m, ex, UsuarioValidoException.class);
         }
     }
     
-    public static class LoginException extends Exception {
+    public static class LoginException extends Errores {
         
-        public LoginException(String m) {
+        public LoginException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public LoginException() {
-            
-            super(LoginException.class.toString());
-            printStackTrace();
+            super(m, ex, LoginException.class);
         }
     }
     
-    public static class EliminarExcelException extends Exception {
+    public static class EliminarExcelException extends Errores {
         
-        public EliminarExcelException(String m) {
+        public EliminarExcelException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public EliminarExcelException() {
-            
-            super(EliminarExcelException.class.toString());
-            printStackTrace();
+            super(m, ex, EliminarExcelException.class);
         }
     }
     
-    public static class AgregarExcelException extends Exception {
+    public static class AgregarExcelException extends Errores {
         
-        public AgregarExcelException(String m) {
+        public AgregarExcelException(String m, Exception ex) {
             
-            super(m);
-            printStackTrace();
-        }
-        
-        public AgregarExcelException() {
-            
-            super(AgregarExcelException.class.toString());
-            printStackTrace();
+            super(m, ex, AgregarExcelException.class);
         }
     }
+    
+    public static class InsertarArchivoExcelException extends Errores {
+        
+        public InsertarArchivoExcelException(String m, Exception ex) {
+            
+            super(m, ex, InsertarArchivoExcelException.class);
+        }
+    }
+    
+    public static class AbrirArchivoExcelException extends Errores {
+        
+        public AbrirArchivoExcelException(String m, Exception ex) {
+            
+            super(m, ex, AbrirArchivoExcelException.class);
+        }
+    }
+    
+    public static class CopiadorException extends Errores {
+        
+        public CopiadorException(String m, Exception ex) {
+            
+            super(m, ex, CopiadorException.class);
+        }
+    }
+    
+    public static class CerrarEntidadException extends Errores {
+        
+        public CerrarEntidadException(String m, Exception ex) {
+            
+            super(m, ex, CopiadorException.class);
+        }
+    }
+    
+    public static class IniciarEntidadException extends Errores {
+        
+        public IniciarEntidadException(String m, Exception ex) {
+            
+            super(m, ex, IniciarEntidadException.class);
+        }
+    }
+    
+    //Todos los metodos de las clases de logica tiene errores personalizados asociados
+    //Tambien existen errores personalizados para cosas como campos vacios y otros escenarios especificos
+    //Todas las clases estaticas de errores heredan a la clase contenedora
 }

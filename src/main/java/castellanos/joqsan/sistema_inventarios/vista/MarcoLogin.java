@@ -4,9 +4,9 @@ package castellanos.joqsan.sistema_inventarios.vista;
 import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
 import castellanos.joqsan.sistema_inventarios.orm.Usuario;
-import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
-import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MarcoLogin extends javax.swing.JFrame {
     
@@ -120,32 +120,38 @@ public class MarcoLogin extends javax.swing.JFrame {
             
             if(username.isEmpty() || password.isEmpty()) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Existen campos vacíos", null);
             }
 
-            LogicaLogin login = new LogicaLogin(username, password);
+            //Aqui se inicia la entidad Usuario
+            LogicaLogin.login = new LogicaLogin(username, password);
         
-            if(login.usuarioValido()) {
+            if(LogicaLogin.login.usuarioValido()) {
                 
-                JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso", "Correcto", JOptionPane.INFORMATION_MESSAGE);
-                Utilidades.cerrarMarco(this);
+                Dialogos.d16(this);
+                
                 MarcoHome.m = new MarcoHome();
                 Utilidades.ejecutarMarco(MarcoHome.m);
+                Utilidades.cerrarMarco(this);
                 
             } else {
                 
-                throw new Errores.LoginException("Usuario o contraseña incorrectos");
+                throw new Errores.LoginException("Usuario o contraseña incorrectos", null);
             }
             
-        } catch (Errores.CamposVaciosException | Errores.ConexionException | Errores.LoginException | Errores.LookAndFeelException | Errores.UsuarioValidoException | HeadlessException ex) {
+        } catch (Errores.CamposVaciosException | Errores.IniciarEntidadException | Errores.LoginException | Errores.UsuarioValidoException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
             
         } finally {
             
-            if(Usuario.session != null) {
+            try {
                 
-                Usuario.cerrar();
+                Utilidades.cerrarEntidad(Usuario.class);
+                
+            } catch (Errores.CerrarEntidadException ex) {
+                
+                Dialogos.d1(this, ex);
             }
         }
     }

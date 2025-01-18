@@ -7,28 +7,28 @@ import castellanos.joqsan.sistema_inventarios.logica.LogicaProductosObs;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
 import castellanos.joqsan.sistema_inventarios.orm.ProductoObservacion;
 import java.awt.HeadlessException;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 public class MarcoObsProductos extends javax.swing.JFrame {
     
     public static MarcoObsProductos m = null;
 
-    public MarcoObsProductos() throws Errores.ConexionException {
+    public MarcoObsProductos() throws Errores.IniciarEntidadException, Errores.ConexionException {
         
+            
         initComponents();
         Utilidades.centrarMarco(this);
         setResizable(false);
-        
+
         if(LogicaProductosObs.crud == null) {
-            
+
             LogicaProductosObs.crud = new LogicaProductosObs();
         }
-        
+
         if(LogicaProductos.crud == null) {
-            
+
             LogicaProductos.crud = new LogicaProductos();
-        }
+        }     
     }
 
     @SuppressWarnings("unchecked")
@@ -153,15 +153,15 @@ public class MarcoObsProductos extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonEliminarActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-   
-        if(ProductoObservacion.session != null) {
-              
-            ProductoObservacion.cerrar();
-        }
-        
-        if(Producto.session != null) {
+
+        try {
             
-            Producto.cerrar();
+           Utilidades.cerrarEntidad(Producto.class);
+           Utilidades.cerrarEntidad(ProductoObservacion.class);
+           
+        } catch(Exception ex) {
+            
+            Dialogos.d1(this, ex);
         }
     }//GEN-LAST:event_formWindowClosing
 
@@ -179,7 +179,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
             if(id_producto.isEmpty() || observaciones.isEmpty()) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
             LogicaProductos.crud.buscarProducto(id_producto);
@@ -195,11 +195,12 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             Utilidades.limpiarCampos(new JTextField[] {
                 textId}, areaObs);
             LogicaProductosObs.crud.setPobs(null);
-            JOptionPane.showMessageDialog(this, "Inserción exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+            Dialogos.d17(this);
             
         } catch(Exception ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
@@ -211,7 +212,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
             if(id_producto.isEmpty()) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
             LogicaProductosObs.crud.buscarObservacion(id_producto);
@@ -219,7 +220,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
         } catch(Errores.BuscarPobsException | Errores.CamposVaciosException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
@@ -232,18 +233,19 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
             if(id_producto.isEmpty() || observaciones.isEmpty()) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
             LogicaProductosObs.crud.actualizarObservacion(new ProductoObservacion(id_producto, observaciones));
             Utilidades.limpiarCampos(new JTextField[] {
                 textId}, areaObs);
             LogicaProductosObs.crud.setPobs(null);
-            JOptionPane.showMessageDialog(this, "Actualización exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
+            
+            Dialogos.d18(this);
             
         } catch(Errores.ActualizarPobsException | Errores.CamposVaciosException | HeadlessException ex) {
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Dialogos.d1(this, ex);
         }
     }
     
@@ -255,18 +257,19 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
             if(id_producto.isEmpty()) {
                 
-                throw new Errores.CamposVaciosException();
+                throw new Errores.CamposVaciosException("Error de campos vacíos", null);
             }
             
             LogicaProductosObs.crud.eliminarObservacion(id_producto);
             LogicaProductosObs.crud.setPobs(null);
             Utilidades.limpiarCampos(new JTextField[] {
                 textId}, areaObs);
-            JOptionPane.showMessageDialog(this, "Eliminación exitosa", "Correcto", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch(Exception ex) {
+            Dialogos.d19(this);
             
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch(Errores.CamposVaciosException | Errores.EliminarPobsException ex) {
+            
+            Dialogos.d1(this, ex);
         }
     }
     
