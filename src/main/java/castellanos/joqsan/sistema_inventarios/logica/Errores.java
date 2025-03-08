@@ -57,11 +57,11 @@ public class Errores extends Exception {
         }
     }
 
-    public static class CargarExcelException extends Errores {
+    public static class ImportarExcelException extends Errores {
 
-        public CargarExcelException(String m, Exception ex) {
+        public ImportarExcelException(String m, Exception ex) {
             
-            super(m, ex, CargarExcelException.class);
+            super(m, ex, ImportarExcelException.class);
         }
     }
 
@@ -238,6 +238,14 @@ public class Errores extends Exception {
         public IniciarEntidadException(String m, Exception ex) {
             
             super(m, ex, IniciarEntidadException.class);
+        }
+    }
+    
+    public static class CadenaIngresadaException extends Errores {
+        
+        public CadenaIngresadaException(String m, Exception ex) {
+            
+            super(m, ex, CadenaIngresadaException.class);
         }
     }
     

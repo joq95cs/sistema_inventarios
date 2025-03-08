@@ -1,8 +1,8 @@
 
 package castellanos.joqsan.sistema_inventarios.logica;
 
-import castellanos.joqsan.sistema_inventarios.orm.ArchivoExcel;
 import castellanos.joqsan.sistema_inventarios.orm.Producto;
+import castellanos.joqsan.sistema_inventarios.vista.Dialogos;
 import castellanos.joqsan.sistema_inventarios.vista.MarcoFormProductos;
 import castellanos.joqsan.sistema_inventarios.vista.Utilidades;
 import java.awt.Desktop;
@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -159,24 +160,125 @@ public class LogicaProductos {
         }
     }
     
-    public void cargarExcel(File excel, int opcion) throws Errores.CargarExcelException {
+    public void cargarListaProductos(DefaultTableModel modelo, HashMap map) throws Errores.CargarListaProductosException {
         
         try {
-              
-            //Se lee el archivo excel y se cargan los registros que contiene
-            //El archivo debe tener la estructura correcta para que funcione
-            //Si el archivo no tiene la estructura correcta se lanzara un error
-            FileInputStream stream = new FileInputStream(excel); //Se crea un stream
-            Workbook libro = new XSSFWorkbook(stream); //Se crea un libro
-            Sheet hoja = libro.getSheetAt(0); //Se utilizara solamente la primera hoja del archivo
-            ArrayList<Producto> registros = new ArrayList<>(); //Los registros se guardaran primero en un array
+            
+            String hql = "FROM Producto";
+            
+            if(map != null) {
+                
+                if(map.containsKey(0)) {
+                    
+                    hql += " p1 WHERE p1.nombre = '" + map.get(0) + "'";
+                    
+                } else if(map.containsKey(1)) {
+                    
+                    hql += " p1 WHERE p1.categoria = '" + map.get(1) + "'";
+                    
+                } else if(map.containsKey(2)) {
+                    
+                    hql += " p1 WHERE p1.stock_min = " + map.get(2).toString();
+                    
+                } else if(map.containsKey(3)) {
+                    
+                    hql += " p1 WHERE p1.stock_max = " + map.get(3).toString();
+                    
+                } else if(map.containsKey(4)) {
+                    
+                    hql += " p1 WHERE p1.stock_ideal = " + map.get(4).toString();
+                    
+                } else if(map.containsKey(5)) {
+                    
+                    hql += " p1 WHERE p1.stock_reorden = " + map.get(5).toString();
+                    
+                } else {
+                    
+                    hql += " p1 WHERE p1.stock_max_pedido = " + map.get(6).toString(); 
+                }
+            }
+            
+            //Se cargan todos los registros en un array
+            Producto.limpiar();
+            ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
+            
+            if(productos.isEmpty()) {
+                
+                throw new Exception();
+            }
+            //Se lee el array y se agregan al modelo de la tabla
+            modelo.setRowCount(0); //Se limpia primero el modelo por si hay registros previos
+            
+            for(Producto each: productos) {
+                
+                Object[] fila = {
+                    
+                    each.getId(),
+                    each.getNombre(),
+                    each.getCategoria(), 
+                    each.getStock_min() + "",
+                    each.getStock_max() + "",
+                    each.getStock_ideal() + "",
+                    each.getStock_reorden() + "",
+                    each.getStock_max_pedido() + ""
+                };
+                
+                modelo.addRow(fila);
+            }
+            
+        } catch(Exception ex) {
+            
+            if(ex.getClass().equals(Exception.class)) {
+                
+               throw new Errores.CargarListaProductosException("Registros no encontrados", ex); 
+            }
+            
+            throw new Errores.CargarListaProductosException("Error de carga de lista", ex);
+        }
+    }
+    
+    public void cargarProducto(String id) throws Errores.CargarProductoException {
+        
+        try {
+            
+            //Se obtiene el objeto en base al id
+            Producto.limpiar();
+            producto = Producto.session.get(Producto.class, id);
+            
+            if(producto == null) {
+                
+                throw new Exception(); //Se lanza un error si no existe el registro
+            }
+            
+            MarcoFormProductos.m = new MarcoFormProductos(true);
+            Utilidades.ejecutarMarco(MarcoFormProductos.m);
+            
+        } catch(Exception ex) {
+            
+            if(ex.getClass().equals(Exception.class)) {
+                
+                throw new Errores.CargarProductoException("Registro no encontrado", ex); //Se indica que el registro no existe
+            }
+            
+            throw new Errores.CargarProductoException("Error de carga de producto", ex);
+        }
+    }
+    
+    public void importarExcel(File excel, int opcion) throws Errores.ImportarExcelException {
+        
+        try {
+            
+            FileInputStream stream = new FileInputStream(excel); //Se crea el stream
+            Workbook libro = new XSSFWorkbook(stream); //Se crea el libro
+            Sheet hoja = libro.getSheetAt(0); //Se crea la hoja
+            
+            ArrayList<Producto> registros = new ArrayList<>(); //En este array se guardaran los registros leidos
+            
+            for(int i=1; i<=hoja.getLastRowNum(); i++) { //Se recorren todas las filas ignorando la primera
 
-            //Se usa un ciclo que recorre todas las filas de la hoja
-            for(int i=1; i<=hoja.getLastRowNum(); i++) {
+                Row fila = hoja.getRow(i); //Se guarda fila que es el registro
 
-                Row fila = hoja.getRow(i); //Se guarda la hoja en cada vuelta de ciclo
-
-                if(fila != null) { //Se verifica que la fila exista
+                if(fila != null) { //Se verifica que la fila exista o que el registro exista
 
                     //Se capturan los datos de las celdas
                     String id = fila.getCell(0).getStringCellValue();
@@ -204,23 +306,23 @@ public class LogicaProductos {
             }
 
             //Se guarda cada registro del array en la tabla
-            for(Producto each : registros) {
+            for(Producto each: registros) {
                 
                 Producto.session.persist(each);
             }
             
             Producto.commit(); //Se confirman los cambios
+            
             libro.close(); //Se cierra el libro
             stream.close(); //Se cierra el stream
             
         } catch(Exception ex) {
             
-            Producto.rollback();
-            throw new Errores.CargarExcelException("Error de carga de Excel", ex);
+            throw new Errores.ImportarExcelException("Error de importación de Excel", ex);
         }
     }
     
-    public void exportarExcel(File excel, String tabla) throws Errores.ExportarExcelException {
+    public void exportarExcel(File excel) throws Errores.ExportarExcelException {
         
         try {
             
@@ -310,81 +412,13 @@ public class LogicaProductos {
             //Se escribe el archivo usando el stream
             FileOutputStream stream = new FileOutputStream(excel);
             libro.write(stream);
-            libro.close();
-            stream.close();
             
-            //Si el archivo fue creado correctamente
-            if(excel.exists()) {
-                
-                //Ahora se llama a la logica de ArchivosExcel para agregar el registro a la tabla
-                LogicaArchivosExcel.crud.setExcel(new ArchivoExcel(excel.getName(), tabla));
-                LogicaArchivosExcel.crud.insertarArchivoExcel();
-                Desktop.getDesktop().open(excel);
-            }
+            libro.close(); //Se cierra el libro
+            stream.close(); //Se cierra el stream
                      
         } catch(Exception ex) { //Se queda la clase base para manejar todo tipo de errores            
             
             throw new Errores.ExportarExcelException("Error de exportación de Excel", ex);
-        }
-    }
-    
-    public void cargarListaProductos(DefaultTableModel modelo) throws Errores.CargarListaProductosException {
-        
-        try {
-            
-            //Se cargan todos los registros en un array
-            Producto.limpiar();
-            String hql = "FROM Producto";
-            ArrayList<Producto> productos = new ArrayList<>(Producto.session.createQuery(hql).list());
-            
-            //Se lee el array y se agregan al modelo de la tabla
-            for(Producto each: productos) {
-                
-                Object[] fila = {
-                    
-                    each.getId(),
-                    each.getNombre(),
-                    each.getCategoria(), 
-                    each.getStock_min() + "",
-                    each.getStock_max() + "",
-                    each.getStock_ideal() + "",
-                    each.getStock_reorden() + "",
-                    each.getStock_max_pedido() + ""
-                };
-                
-                modelo.addRow(fila);
-            }
-            
-        } catch(Exception ex) {
-            
-            throw new Errores.CargarListaProductosException("Error de carga de lista", ex);
-        }
-    }
-    
-    public void cargarProducto(String id) throws Errores.CargarProductoException {
-        
-        try {
-            
-            //Se obtiene el objeto en base al id
-            Producto.limpiar();
-            producto = Producto.session.get(Producto.class, id);
-            
-            if(producto == null) {
-                
-                throw new Exception(); //Se lanza un error si no existe el registro
-            }
-            
-            MarcoFormProductos.m = new MarcoFormProductos(true);
-            Utilidades.ejecutarMarco(MarcoFormProductos.m);
-            
-        } catch(Exception ex) {
-            
-            if(ex.getClass().equals(Exception.class)) {
-                
-                throw new Errores.CargarProductoException("Registro no encontrado", ex); //Se indica que el registro no existe
-            }
-            
-            throw new Errores.CargarProductoException("Error de carga de producto", ex);
         }
     }
     

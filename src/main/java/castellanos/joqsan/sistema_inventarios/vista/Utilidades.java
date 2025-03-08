@@ -6,8 +6,6 @@ import castellanos.joqsan.sistema_inventarios.orm.*;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -79,10 +77,46 @@ public class Utilidades {
         
         if(campo.getText().isEmpty() || campo.getText().isBlank()) {
             
-            return null;
+            return null; //Regresa null si el campo es vacio o blanco
         }
         
         return campo.getText().trim();
+    }
+        
+    //Este metodo se usa para obtener un entero a partir de una cadena
+    public static int obtenerEntero(String cadena) throws Errores.CadenaIngresadaException {
+        
+        int valor = 0;
+        
+        try {
+            
+            valor = Integer.parseInt(cadena);
+            
+        } catch(NumberFormatException ex) {
+            
+            //Si se detecta una cadena se lanza el error correspondiente
+            throw new Errores.CadenaIngresadaException("Error de cadena ingresada", ex);
+        }
+        
+        return valor;
+    }
+    
+    //Este metodo se usa para obtener un entero a partir de una cadena
+    public static double obtenerDoble(String cadena) throws Errores.CadenaIngresadaException {
+        
+        double valor = 0;
+        
+        try {
+            
+            valor = Double.parseDouble(cadena);
+            
+        } catch(NumberFormatException ex) {
+            
+            //Si se detecta una cadena se lanza el error correspondiente
+            throw new Errores.CadenaIngresadaException("Error de cadena ingresada", ex);
+        }
+        
+        return valor;
     }
     
     public static void iniciarEntidad(Class<?> type) throws Errores.IniciarEntidadException  {

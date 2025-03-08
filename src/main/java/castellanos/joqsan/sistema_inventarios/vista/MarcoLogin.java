@@ -5,8 +5,6 @@ import castellanos.joqsan.sistema_inventarios.logica.Errores;
 import castellanos.joqsan.sistema_inventarios.logica.LogicaLogin;
 import castellanos.joqsan.sistema_inventarios.orm.Usuario;
 import java.awt.event.KeyEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MarcoLogin extends javax.swing.JFrame {
     
@@ -128,11 +126,11 @@ public class MarcoLogin extends javax.swing.JFrame {
         
             if(LogicaLogin.login.usuarioValido()) {
                 
-                Dialogos.d16(this);
+                Dialogos.d_clave(this, "inicio_sesion");
                 
                 MarcoHome.m = new MarcoHome();
                 Utilidades.ejecutarMarco(MarcoHome.m);
-                Utilidades.cerrarMarco(this);
+                Utilidades.cerrarMarco(this); //Se cierra el actual
                 
             } else {
                 
@@ -141,7 +139,7 @@ public class MarcoLogin extends javax.swing.JFrame {
             
         } catch (Errores.CamposVaciosException | Errores.IniciarEntidadException | Errores.LoginException | Errores.UsuarioValidoException ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
             
         } finally {
             
@@ -151,7 +149,7 @@ public class MarcoLogin extends javax.swing.JFrame {
                 
             } catch (Errores.CerrarEntidadException ex) {
                 
-                Dialogos.d1(this, ex);
+                Dialogos.d_error(this, ex);
             }
         }
     }

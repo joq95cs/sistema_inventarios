@@ -161,7 +161,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
            
         } catch(Exception ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
         }
     }//GEN-LAST:event_formWindowClosing
 
@@ -196,11 +196,11 @@ public class MarcoObsProductos extends javax.swing.JFrame {
                 textId}, areaObs);
             LogicaProductosObs.crud.setPobs(null);
             
-            Dialogos.d17(this);
+            Dialogos.d_clave(this, "insercion_pobs");
             
         } catch(Exception ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
         }
     }
     
@@ -220,7 +220,7 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             
         } catch(Errores.BuscarPobsException | Errores.CamposVaciosException ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
         }
     }
     
@@ -241,11 +241,11 @@ public class MarcoObsProductos extends javax.swing.JFrame {
                 textId}, areaObs);
             LogicaProductosObs.crud.setPobs(null);
             
-            Dialogos.d18(this);
+            Dialogos.d_clave(this, "actualizacion_pobs");
             
         } catch(Errores.ActualizarPobsException | Errores.CamposVaciosException | HeadlessException ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
         }
     }
     
@@ -265,11 +265,11 @@ public class MarcoObsProductos extends javax.swing.JFrame {
             Utilidades.limpiarCampos(new JTextField[] {
                 textId}, areaObs);
             
-            Dialogos.d19(this);
+            Dialogos.d_clave(this, "eliminacion_pobs");
             
         } catch(Errores.CamposVaciosException | Errores.EliminarPobsException ex) {
             
-            Dialogos.d1(this, ex);
+            Dialogos.d_error(this, ex);
         }
     }
     
